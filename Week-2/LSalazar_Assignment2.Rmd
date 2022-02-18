@@ -1,8 +1,10 @@
 ---
-title: "Data 605: Assignment 2"
+title: 'Data 605: Assignment 2'
 author: "Leticia Salazar"
 date: "2/4/2022"
 output:
+  pdf_document:
+    toc: yes
   html_document:
     theme: journal
     highlight: pygments
@@ -14,10 +16,136 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+$~$
+
 ### Problem Set 1
 
-![](/Users/letiix3/Desktop/Data-605/Week-2/Problem Set 1.png)
+$~$
+
+#### (1) Show that _$A^TA \ne AA^T$_ in general. Proof and Demonstration.
+
+```{r}
+# Creating matrix 4 x 3 with random numbers
+matrixA <- matrix(c(1:12), nrow = 4, byrow = T)
+matrixA
+```
+$~$
+```{r}
+# Transpose "matrixA"; it creates a 3 x 4 matrix
+matrixAT <- t(matrixA)
+matrixAT
+```
+
+$~$
+
+```{r}
+# Checking to see if A^TA ≠ AA^T
+
+# A^TA; matrixA multiplied by matrixAT
+ATA <- matrixA %*% matrixAT
+ATA
+
+#AA^T; matrixAT multiplied by matrixA
+AAT <- matrixAT %*% matrixA
+AAT
+```
+
+$~$
+
+#### (2) For a special type of square matrix A, we get _$A^TA = AA^T$_. Under what conditions could this be true? (Hint: The Identity matrix _I_ is an example of such a matrix).
+
+```{r}
+# Create matrix for A
+A <- matrix(c(1:9), nrow = 3, ncol = 3)
+A
+
+# Create matrix for AT
+AT <- matrix(c(1:9), nrow = 3, ncol = 3)
+AT
+```
+
+$~$
+
+```{r}
+# Multiply matrix A with matrix AT
+A %*% AT
+
+# Multiply matrix AT with matrix A
+AT %*% A
+```
+
+$~$
+
+```{r}
+A %*% AT == AT %*% A
+```
+
+$~$
+
+#### Conclusion:
+After transposing `ATA` matrix the results were a 3x3 `AAT` matrix, originally a 4x3, therefore in general, $A^TA \ne AA^T$. For part two, when the matrix is symmetrical the transposing of the matrices equals to the matrix itself, therefore _$A^TA = AA^T$_.  
+
+$~$
 
 ### Problem Set 2
 
-![](/Users/letiix3/Desktop/Data-605/Week-2/Problem Set 2.png)
+#### Matrix factorization is a very important problem. There are supercomputers built just to do matrix factorizations. Every second you are on an airplane, matrices are being factorized. Radars that track flights use a technique called Kalman filtering. At the heart of Kalman Filtering is a Matrix Factorization operation. Kalman Filters are solving linear systems of equations when they track your flight using radars. Write an R function to factorize a square matrix A into LU or LDU, whichever you prefer. You don't have to worry about permuting rows of A and you can assume that A is less than 5x5, if you need to hard-code any variables in your code.
+
+$~$
+
+```{r}
+# Create the function
+
+LU <- function(A) {
+ 
+# Upper triangular
+  U <- A
+  
+# Setting matrix dimension
+  n <- dim(A)[1]
+  
+# Lower triangular
+  L <- diag(n)
+  
+  
+  if (n == 1) {
+    return(list(L, U))
+  }
+  
+  for(a in 2:n) {
+    for(t in 1:(a - 1)) {
+      multiplier <- -U[a, t] / U[t, t]
+      U[a, ] <- multiplier * U[t, ] + U[a, ]
+      L[a, t] <- -multiplier
+    }
+  }
+  return(list(L,U))
+}
+```
+
+$~$
+
+```{r}
+# Application to the function
+
+# Testing with a 3x3 matrix
+A <- matrix(1:9, nrow = 3, byrow = T)
+A
+
+LU_2 <- LU(A)
+
+# Multiply the upper and lower matrix
+lower_multiply <- LU_2[[1]]
+lower_multiply
+
+upper_multiply <- LU_2[[2]]
+upper_multiply
+
+A == lower_multiply %*% upper_multiply
+```
+
+$~$
+
+### References:
+
+* https://www.geeksforgeeks.org/doolittle-algorithm-lu-decomposition/
