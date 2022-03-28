@@ -1,0 +1,37 @@
+---
+title: "Data 605 - Follow Up Discussion Board"
+author: "Leticia Salazar"
+date: "3/12/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Chapter 6 Question 2: 
+
+#### A card is drawn at random from a deck of playing cards. If it is red, the player wins 1 dollar; if it is black, the player loses 2 dollars. Find the expected value of the game.
+
+```{r}
+# Probability of Red
+P_Red <- 26 / 52
+
+#Probability of Black
+P_Black <- 26 / 52
+
+# Winning Amount $
+Win <- 1
+
+# Losing Amount $
+Lose <- 2
+
+# Expected  Value
+ev <-( (P_Red * Win) - (P_Black * Lose) )
+ev
+
+# Variance
+var <- (0^2 *(P_Red)) + (1^2 * (P_Black) - (-0.5^2))
+var
+```
+
