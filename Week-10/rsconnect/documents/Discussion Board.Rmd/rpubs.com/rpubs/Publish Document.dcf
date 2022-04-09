@@ -1,0 +1,11 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/884260/f6582052b29a4f4f8d5a16197d941ca5
+bundleId: https://api.rpubs.com/api/v1/document/884260/f6582052b29a4f4f8d5a16197d941ca5
+url: http://rpubs.com/letisalba/884260
+when: 1648663403.11088
+lastSyncTime: 1648663403.11089

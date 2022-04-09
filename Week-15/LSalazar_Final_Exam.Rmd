@@ -1,0 +1,19 @@
+---
+title: "Data 605 - Final Exam"
+author: "Leticia Salazar"
+date: "4/1/2022"
+output:
+  html_document:
+    theme: flatly
+    highlight: pygments
+    toc: yes
+    toc_float: yes  
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Final Exam

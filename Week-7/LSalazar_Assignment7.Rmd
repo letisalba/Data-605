@@ -3,10 +3,8 @@ title: "Data 605 - Assignment 7"
 author: "Leticia Salazar"
 date: "3/9/2022"
 output:
-  pdf_document:
-    toc: yes
   html_document:
-    theme: journal
+    theme: flatly
     highlight: pygments
     toc: yes
     toc_float: yes
