@@ -1,0 +1,26 @@
+---
+title: "Data 605 - Assignment 14"
+author: "Leticia Salazar"
+date: "5/2/2022"
+output:
+  html_document:
+    theme: flatly
+    highlight: pygments
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Taylor Series Approximations
+
+#### This week, we'll work out some Taylor Series expansions of popular functions
+
+#### * $f(x) = \frac{1}{(1 - x)}$
+#### * $f(x) = e^x$
+#### * $f(x) = ln(1 + x)$
+
+#### For each function, only consider its valid ranges as indicated in the notes when you are computing the Taylor Series expansion.
+
