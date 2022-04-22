@@ -4,12 +4,13 @@ author: "Leticia Salazar"
 date: "4/1/2022"
 output:
   html_document:
-    theme: flatly
-    highlight: pygments
+    theme: simplex
+    highlight: kate
     toc: yes
-    toc_float: yes  
-  pdf_document:
-    toc: yes
+    toc_float:
+      collapsed: false
+      smooth_scroll: false 
+
 ---
 
 ```{r setup, include=FALSE}
@@ -18,17 +19,18 @@ knitr::opts_chunk$set(echo = TRUE)
 
 $~$
 
-## Final Exam
+### **Loading libraries**
+```{r, warning = FALSE, message = FALSE}
+# install.packages("igraph")
+library(igraph)
+library(openintro)
+library(matrixcalc)
+library(Matrix)
+```
 
-### Problem 1
+$~$
 
-#### You’ll verify for yourself that PageRank works by performing calculations on a small universe of web pages.
-#### Let’s use the 6 page universe that we had in the previous discussion For this directed graph, perform the following calculations in R.
-#### * Form the A matrix. Then, introduce decay and form the B matrix as we did in the course notes. (5 Points)
-#### * Start with a uniform rank vector r and perform power iterations on B till convergence. That is, compute the solution r = Bn * r. Attempt this for a sufficiently large n so that r actually converges. (5 Points)
-#### * Compute the eigen-decomposition of B and verify that you indeed get an eigenvalue of 1 as the largest eigenvalue and that its corresponding eigenvector is the same vector that you obtained in the previous power iteration method. Further, this eigenvector has all positive entries and it sums to 1.(10 points)
-#### * Use the graph package in R and its page.rank method to compute the Page Rank of the graph as given in A. Note that you don’t need to apply decay. The package starts with a connected graph and applies decay internally. Verify that you do get the same PageRank vector as the two approaches above. (10 points)
-
+### **Problem 1 Playing with PageRank**
 $~$
 
 #### 1. PAGERANK: THE MATH BEHIND GOOGLE SEARCH
@@ -41,7 +43,7 @@ $~$
 #### $r(P_i) = \displaystyle \sum_{P_j \in B_{P_i}} \frac{r(P_j)}{|P_j|}$
 
 
-#### Where $B_{Pi}$ is the set of pages pointing into $P_i and |P_i|$ is the number of outlinks from $P_i$.
+#### Where $B_{Pi}$ is the set of pages pointing into $P_i and  |P_i|$ is the number of outlinks from $P_i$.
 
 #### As we can see, this is a recursive definition. In order to solve this, we initiate the process with all pages having equal PageRanks and repeat this process till it converges to some final stable value. Let’s consider a small example web with only 6 URLs. The bi-directional arrows indicate that these pages have links with each other. That is, Page 1 has a link to Page 3 and Page 3 links back to Page 1, in this example.
 
@@ -106,12 +108,139 @@ $~$
 #### 2.2 **PageRank Random Walk model - from Wikipedia.** If web surfers who start on a random page have an 85% likelihood of choosing a random link from the page they are currently visiting, and a 15% likelihood of jumping to a page chosen at random from the entire web, they will reach Page E 8.1% of the time. (The 15% likelihood of jumping to an arbitrary page corresponds to a damping factor of 85%.) Without damping, all web surfers would eventually end up on Pages A, B, or C, and all other pages would have PageRank zero. In the presence of damping, Page A effectively links to all pages in the web, even though it has no outgoing links of its own.
 
 ![](/Users/letiix3/Desktop/Data-605/Week-15/Final_Exam_Images/Q2_F3.png)
+$~$
 
+#### Playing with PageRank
+
+#### You’ll verify for yourself that PageRank works by performing calculations on a small universe of web pages.
+#### Let’s use the 6 page universe that we had in the previous discussion For this directed graph, perform the following calculations in R.
+#### * Form the A matrix. Then, introduce decay and form the B matrix as we did in the course notes. (5 Points)
+
+```{r}
+# create matrix
+
+A <- matrix(c(0, (1/2), (1/2), 0, 0, 0, 0, 0, 0, 0, 0, 0, (1/3), (1/3), 0, 0, (1/3), 0, 0, 0, 0, 0, (1/2), (1/2), 0, 0, 0, (1/2), 0, (1/2), 0, 0, 0, 1, 0, 0), nrow = 6, byrow = T)
+A
+#formatC(A, format = "f", digits = 4)
+```
+
+#### Being that the second row is filled with 0's we are replacing the vector of 1/6 since there are 6 webpages and we have an equal probability of landing on any of the pages.
+```{r}
+n <- 6 # number of webpages
+
+# creating new row to replace matrix A second row
+row2 <- rep(1/6, n)
+
+# Removing second row from matrix A
+A_2 <- A[-2,]
+
+# Adding r into the second row and creating matrix A_2
+A_2 <- matrix(rbind(A_2[1,], row2, A_2[- (1), ]), 6)
+A_2
+
+#A_2 <- A + (apply(A, 1, sum) !=1) * 1 / n
+#formatC(A_2, format = "f", digits = 4)
+```
+
+
+```{r}
+# decay form B matrix
+decay <- 0.85 
+n <- nrow(A_2)
+
+B <- decay * A_2 + ((1 - decay) / n)
+formatC(B, format = "f", digits = 4)
+```
+
+#### * Start with a uniform rank vector r and perform power iterations on B till convergence. That is, compute the solution $r = B^n * r$. Attempt this for a sufficiently large n so that r actually converges. (5 Points)
+
+```{r}
+# We will take the second row of 0.167 to perform the iterations on B when r = B^n * r
+#row2 <- rep(1/6, n)
+#formatC(r, format = "f", digits = 3)
+
+# we'll do a couple of iterations increasing by 100 starting at 0
+# commenting out because I found a better way to perform the iterations
+n <- 0
+r_0 <- matrix.power(t(B), n) %*%  row2
+r_0
+
+n <- 10
+r_10 <- matrix.power(t(B), n) %*%  row2
+r_10
+
+n <- 20
+r_20 <- matrix.power(t(B), n) %*% row2
+r_20
+
+n <- 30
+r_30 <- matrix.power(t(B), n) %*% row2
+r_30
+
+n <- 40
+r_40 <- matrix.power(t(B), n) %*% row2
+r_40
+
+n <- 50
+r_50 <- matrix.power(t(B), n) %*% row2
+r_50
+
+# By iteration 30 we found the convergence
+iter_converg <- matrix.power(t(B), 30) %*% row2
+```
+
+
+```{r}
+# For this I decided to do a for loop to not have to actually do this manually.
+#for (i in seq(0, 50, by = 10)){
+  #print(paste("ITERATION BY ",i,":"))
+  #print((t(B)^ i) %*% row2)
+  #print(matrix.power(t(B), n) %*% row2)
+  #print("...........................")
+#}
+```
 
 
 $~$
 
-### Problem 2 (40 points)
+
+#### * Compute the eigen-decomposition of B and verify that you indeed get an eigenvalue of 1 as the largest eigenvalue and that its corresponding eigenvector is the same vector that you obtained in the previous power iteration method. Further, this eigenvector has all positive entries and it sums to 1.(10 points)
+
+```{r}
+eigen_decomp <- eigen(B)
+eigen_decomp
+
+# turning values as numeric and getting the max value of 1
+max_value_decomp <- which.max(eigen(B)$values)
+print(paste('The largest eigenvalue is', max(max_value_decomp)))
+
+# corresponding vector of max eigenvalue
+eigen_decomp2 <- as.numeric((1/sum(eigen_decomp$vectors[,1]))*eigen_decomp$vectors[,1])
+sum(eigen_decomp2)
+```
+
+#### * Use the graph package in R and its page.rank method to compute the Page Rank of the graph as given in A. Note that you don’t need to apply decay. The package starts with a connected graph and applies decay internally. Verify that you do get the same PageRank vector as the two approaches above. (10 points)
+
+```{r}
+# Here we are using the library 'igraph' installed at the begining to complete the question
+
+#graph_A <- graph.adjacency(A, weighted = T)
+graph_A <- graph_from_adjacency_matrix(A, weighted = T)
+plot(graph_A)
+```
+
+```{r}
+# verifying that you get the same PageRank vector as the two approached above
+pageRank <- page.rank(graph_A)$vector
+
+results <- (round(iter_converg, 4) == round(pageRank, 4))
+results
+```
+
+
+$~$
+
+### **Problem 2 Kaggle.com 'MNIST'**
 
 #### 1. Go to Kaggle.com and build an account if you do not already have one. It is free.
 
@@ -134,7 +263,7 @@ $~$
 
 $~$
 
-### Problem 3 (30 points)
+### **Problem 3 Kaggle Competition**
 
 #### You are to compete in the House Prices: Advanced Regression Techniques competition https://www.kaggle.com/c/house-prices-advanced-regression-techniques . I want you to do the following. Descriptive and Inferential Statistics. Provide univariate descriptive statistics and appropriate plots for the training data set. Provide a scatterplot matrix for at least two of the independent variables and the dependent variable. Derive a correlation matrix for any three quantitative variables in the dataset. Test the hypotheses that the correlations between each pairwise set of variables is 0 and provide an 80% confidence interval. Discuss the meaning of your analysis. Would you be worried about familywise error? Why or why not? 5 points
 
