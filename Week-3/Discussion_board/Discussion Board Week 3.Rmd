@@ -1,0 +1,45 @@
+---
+title: "Data 605 - Week 3"
+author: "Leticia Salazar"
+date: "2/7/2022"
+output:
+  html_document:
+    theme: journal
+    highlight: pygments
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Linear Algebra: Exercise C20
+
+#### Consider the matrix A below. First, show that *A* is diagonalizable by computing the geometric multiplicities of the eigenvalues and quoting the relevant theorem. Second, find a diagnoal matrix *D* and a nonsingular matrix *S* so that *$S^{-1}AS = D$.*
+
+![](/Users/letiix3/Desktop/Data-605/Week-3/C20-Matrix.png)
+
+#### Step 1: Diagonalizable
+
+```{r}
+m <- matrix( c(18, -4, -9, 5, -15, 8, 9, -6, 33, -6, -16, 9, 15, 6, 9, -4), nrow = 4, ncol = 4)
+p <- eigen(m)$vectors
+d <- diag(eigen(m)$values)
+p %*% d %*% solve(p)
+m
+```
+
+
+
+
+
+
+
+
+
+
+
+

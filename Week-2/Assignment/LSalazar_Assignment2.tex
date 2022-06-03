@@ -1,0 +1,417 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Data 605: Assignment 2},
+  pdfauthor={Leticia Salazar},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifluatex
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\title{Data 605: Assignment 2}
+\author{Leticia Salazar}
+\date{2/4/2022}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\(~\)
+
+\hypertarget{problem-set-1}{%
+\subsubsection{Problem Set 1}\label{problem-set-1}}
+
+\(~\)
+
+\hypertarget{show-that-ata-ne-aat-in-general.-proof-and-demonstration.}{%
+\paragraph{\texorpdfstring{(1) Show that \emph{\(A^TA \ne AA^T\)} in
+general. Proof and
+Demonstration.}{(1) Show that A\^{}TA \textbackslash ne AA\^{}T in general. Proof and Demonstration.}}\label{show-that-ata-ne-aat-in-general.-proof-and-demonstration.}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Creating matrix 4 x 3 with random numbers}
+\NormalTok{matrixA }\OtherTok{\textless{}{-}} \FunctionTok{matrix}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{12}\NormalTok{), }\AttributeTok{nrow =} \DecValTok{4}\NormalTok{, }\AttributeTok{byrow =}\NormalTok{ T)}
+\NormalTok{matrixA}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      [,1] [,2] [,3]
+## [1,]    1    2    3
+## [2,]    4    5    6
+## [3,]    7    8    9
+## [4,]   10   11   12
+\end{verbatim}
+
+\(~\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Transpose "matrixA"; it creates a 3 x 4 matrix}
+\NormalTok{matrixAT }\OtherTok{\textless{}{-}} \FunctionTok{t}\NormalTok{(matrixA)}
+\NormalTok{matrixAT}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      [,1] [,2] [,3] [,4]
+## [1,]    1    4    7   10
+## [2,]    2    5    8   11
+## [3,]    3    6    9   12
+\end{verbatim}
+
+\(~\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Checking to see if A\^{}TA ≠ AA\^{}T}
+
+\CommentTok{\# A\^{}TA; matrixA multiplied by matrixAT}
+\NormalTok{ATA }\OtherTok{\textless{}{-}}\NormalTok{ matrixA }\SpecialCharTok{\%*\%}\NormalTok{ matrixAT}
+\NormalTok{ATA}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      [,1] [,2] [,3] [,4]
+## [1,]   14   32   50   68
+## [2,]   32   77  122  167
+## [3,]   50  122  194  266
+## [4,]   68  167  266  365
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#AA\^{}T; matrixAT multiplied by matrixA}
+\NormalTok{AAT }\OtherTok{\textless{}{-}}\NormalTok{ matrixAT }\SpecialCharTok{\%*\%}\NormalTok{ matrixA}
+\NormalTok{AAT}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      [,1] [,2] [,3]
+## [1,]  166  188  210
+## [2,]  188  214  240
+## [3,]  210  240  270
+\end{verbatim}
+
+\(~\)
+
+\hypertarget{for-a-special-type-of-square-matrix-a-we-get-ata-aat.-under-what-conditions-could-this-be-true-hint-the-identity-matrix-i-is-an-example-of-such-a-matrix.}{%
+\paragraph{\texorpdfstring{(2) For a special type of square matrix A, we
+get \emph{\(A^TA = AA^T\)}. Under what conditions could this be true?
+(Hint: The Identity matrix \emph{I} is an example of such a
+matrix).}{(2) For a special type of square matrix A, we get A\^{}TA = AA\^{}T. Under what conditions could this be true? (Hint: The Identity matrix I is an example of such a matrix).}}\label{for-a-special-type-of-square-matrix-a-we-get-ata-aat.-under-what-conditions-could-this-be-true-hint-the-identity-matrix-i-is-an-example-of-such-a-matrix.}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Create matrix for A}
+\NormalTok{A }\OtherTok{\textless{}{-}} \FunctionTok{matrix}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{9}\NormalTok{), }\AttributeTok{nrow =} \DecValTok{3}\NormalTok{, }\AttributeTok{ncol =} \DecValTok{3}\NormalTok{)}
+\NormalTok{A}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      [,1] [,2] [,3]
+## [1,]    1    4    7
+## [2,]    2    5    8
+## [3,]    3    6    9
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Create matrix for AT}
+\NormalTok{AT }\OtherTok{\textless{}{-}} \FunctionTok{matrix}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{9}\NormalTok{), }\AttributeTok{nrow =} \DecValTok{3}\NormalTok{, }\AttributeTok{ncol =} \DecValTok{3}\NormalTok{)}
+\NormalTok{AT}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      [,1] [,2] [,3]
+## [1,]    1    4    7
+## [2,]    2    5    8
+## [3,]    3    6    9
+\end{verbatim}
+
+\(~\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Multiply matrix A with matrix AT}
+\NormalTok{A }\SpecialCharTok{\%*\%}\NormalTok{ AT}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      [,1] [,2] [,3]
+## [1,]   30   66  102
+## [2,]   36   81  126
+## [3,]   42   96  150
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Multiply matrix AT with matrix A}
+\NormalTok{AT }\SpecialCharTok{\%*\%}\NormalTok{ A}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      [,1] [,2] [,3]
+## [1,]   30   66  102
+## [2,]   36   81  126
+## [3,]   42   96  150
+\end{verbatim}
+
+\(~\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{A }\SpecialCharTok{\%*\%}\NormalTok{ AT }\SpecialCharTok{==}\NormalTok{ AT }\SpecialCharTok{\%*\%}\NormalTok{ A}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      [,1] [,2] [,3]
+## [1,] TRUE TRUE TRUE
+## [2,] TRUE TRUE TRUE
+## [3,] TRUE TRUE TRUE
+\end{verbatim}
+
+\(~\)
+
+\hypertarget{conclusion}{%
+\paragraph{Conclusion:}\label{conclusion}}
+
+After transposing \texttt{ATA} matrix the results were a 3x3
+\texttt{AAT} matrix, originally a 4x3, therefore in general,
+\(A^TA \ne AA^T\). For part two, when the matrix is symmetrical the
+transposing of the matrices equals to the matrix itself, therefore
+\emph{\(A^TA = AA^T\)}.
+
+\(~\)
+
+\hypertarget{problem-set-2}{%
+\subsubsection{Problem Set 2}\label{problem-set-2}}
+
+\hypertarget{matrix-factorization-is-a-very-important-problem.-there-are-supercomputers-built-just-to-do-matrix-factorizations.-every-second-you-are-on-an-airplane-matrices-are-being-factorized.-radars-that-track-flights-use-a-technique-called-kalman-filtering.-at-the-heart-of-kalman-filtering-is-a-matrix-factorization-operation.-kalman-filters-are-solving-linear-systems-of-equations-when-they-track-your-flight-using-radars.-write-an-r-function-to-factorize-a-square-matrix-a-into-lu-or-ldu-whichever-you-prefer.-you-dont-have-to-worry-about-permuting-rows-of-a-and-you-can-assume-that-a-is-less-than-5x5-if-you-need-to-hard-code-any-variables-in-your-code.}{%
+\paragraph{Matrix factorization is a very important problem. There are
+supercomputers built just to do matrix factorizations. Every second you
+are on an airplane, matrices are being factorized. Radars that track
+flights use a technique called Kalman filtering. At the heart of Kalman
+Filtering is a Matrix Factorization operation. Kalman Filters are
+solving linear systems of equations when they track your flight using
+radars. Write an R function to factorize a square matrix A into LU or
+LDU, whichever you prefer. You don't have to worry about permuting rows
+of A and you can assume that A is less than 5x5, if you need to
+hard-code any variables in your
+code.}\label{matrix-factorization-is-a-very-important-problem.-there-are-supercomputers-built-just-to-do-matrix-factorizations.-every-second-you-are-on-an-airplane-matrices-are-being-factorized.-radars-that-track-flights-use-a-technique-called-kalman-filtering.-at-the-heart-of-kalman-filtering-is-a-matrix-factorization-operation.-kalman-filters-are-solving-linear-systems-of-equations-when-they-track-your-flight-using-radars.-write-an-r-function-to-factorize-a-square-matrix-a-into-lu-or-ldu-whichever-you-prefer.-you-dont-have-to-worry-about-permuting-rows-of-a-and-you-can-assume-that-a-is-less-than-5x5-if-you-need-to-hard-code-any-variables-in-your-code.}}
+
+\(~\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Create the function}
+
+\NormalTok{LU }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(A) \{}
+ 
+\CommentTok{\# Upper triangular}
+\NormalTok{  U }\OtherTok{\textless{}{-}}\NormalTok{ A}
+  
+\CommentTok{\# Setting matrix dimension}
+\NormalTok{  n }\OtherTok{\textless{}{-}} \FunctionTok{dim}\NormalTok{(A)[}\DecValTok{1}\NormalTok{]}
+  
+\CommentTok{\# Lower triangular}
+\NormalTok{  L }\OtherTok{\textless{}{-}} \FunctionTok{diag}\NormalTok{(n)}
+  
+  
+  \ControlFlowTok{if}\NormalTok{ (n }\SpecialCharTok{==} \DecValTok{1}\NormalTok{) \{}
+    \FunctionTok{return}\NormalTok{(}\FunctionTok{list}\NormalTok{(L, U))}
+\NormalTok{  \}}
+  
+  \ControlFlowTok{for}\NormalTok{(a }\ControlFlowTok{in} \DecValTok{2}\SpecialCharTok{:}\NormalTok{n) \{}
+    \ControlFlowTok{for}\NormalTok{(t }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{(a }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{)) \{}
+\NormalTok{      multiplier }\OtherTok{\textless{}{-}} \SpecialCharTok{{-}}\NormalTok{U[a, t] }\SpecialCharTok{/}\NormalTok{ U[t, t]}
+\NormalTok{      U[a, ] }\OtherTok{\textless{}{-}}\NormalTok{ multiplier }\SpecialCharTok{*}\NormalTok{ U[t, ] }\SpecialCharTok{+}\NormalTok{ U[a, ]}
+\NormalTok{      L[a, t] }\OtherTok{\textless{}{-}} \SpecialCharTok{{-}}\NormalTok{multiplier}
+\NormalTok{    \}}
+\NormalTok{  \}}
+  \FunctionTok{return}\NormalTok{(}\FunctionTok{list}\NormalTok{(L,U))}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\(~\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Application to the function}
+
+\CommentTok{\# Testing with a 3x3 matrix}
+\NormalTok{A }\OtherTok{\textless{}{-}} \FunctionTok{matrix}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{9}\NormalTok{, }\AttributeTok{nrow =} \DecValTok{3}\NormalTok{, }\AttributeTok{byrow =}\NormalTok{ T)}
+\NormalTok{A}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      [,1] [,2] [,3]
+## [1,]    1    2    3
+## [2,]    4    5    6
+## [3,]    7    8    9
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{LU\_2 }\OtherTok{\textless{}{-}} \FunctionTok{LU}\NormalTok{(A)}
+
+\CommentTok{\# Multiply the upper and lower matrix}
+\NormalTok{lower\_multiply }\OtherTok{\textless{}{-}}\NormalTok{ LU\_2[[}\DecValTok{1}\NormalTok{]]}
+\NormalTok{lower\_multiply}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      [,1] [,2] [,3]
+## [1,]    1    0    0
+## [2,]    4    1    0
+## [3,]    7    2    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{upper\_multiply }\OtherTok{\textless{}{-}}\NormalTok{ LU\_2[[}\DecValTok{2}\NormalTok{]]}
+\NormalTok{upper\_multiply}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      [,1] [,2] [,3]
+## [1,]    1    2    3
+## [2,]    0   -3   -6
+## [3,]    0    0    0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{A }\SpecialCharTok{==}\NormalTok{ lower\_multiply }\SpecialCharTok{\%*\%}\NormalTok{ upper\_multiply}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      [,1] [,2] [,3]
+## [1,] TRUE TRUE TRUE
+## [2,] TRUE TRUE TRUE
+## [3,] TRUE TRUE TRUE
+\end{verbatim}
+
+\(~\)
+
+\hypertarget{references}{%
+\subsubsection{References:}\label{references}}
+
+\begin{itemize}
+\tightlist
+\item
+  \url{https://www.geeksforgeeks.org/doolittle-algorithm-lu-decomposition/}
+\end{itemize}
+
+\end{document}

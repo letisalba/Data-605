@@ -1,0 +1,40 @@
+---
+title: "Follow-Up Discussion Board"
+author: "Leticia Salazar"
+date: "2/19/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Exercise C10
+
+In the vector space C3, compute the vector representation ρB (v) for the basis B and vector v below.
+
+$$B = \begin{bmatrix}2 \\-2 \\2\end{bmatrix}, \begin{bmatrix}1 \\3 \\1\end{bmatrix}, \begin{bmatrix}3 \\5 \\2\end{bmatrix}$$
+
+$$v = \begin{bmatrix}11 \\5 \\8\end{bmatrix}$$
+
+For this problem I looked back to the vector space chapter and recalled the Theorem VRRB Vector Representation Relative to a Basis: Suppose that V is a vector space and B = {v1, v2, v3, ..., vm} is a linearly inde- pendent set that spans V. Let w be any vector in V....
+
+This allows for a linear combination of the vectors v and B to then apply Theorem SLSLC to become a system of linear equations. Similarly to your solution I obtained the same conclusion:
+
+$$x\begin{bmatrix}2 \\-2 \\2\end{bmatrix} +  y\begin{bmatrix}1 \\3 \\1\end{bmatrix} +  z\begin{bmatrix}3 \\5 \\2\end{bmatrix} = \begin{bmatrix}11 \\5 \\8\end{bmatrix}$$
+
+
+$$\begin{bmatrix}2 & 1 & 3 & 11\\-2 & 3 & 5 & 5 \\2 & 1 & 2 & 8\end{bmatrix} $$
+After RREF
+
+```{r}
+library(pracma)
+A <- matrix(c(2, -2, 2, 1, 3, 1 , 3, 5, 2, 11, 5, 8), nrow = 3, ncol = 4)
+
+rref(A)
+```
+
+
+Solution: x = 2, y = -2 and z = 3 or $$ρB (v) = \begin{bmatrix}2 \\-2 \\3\end{bmatrix}$$ 
+
+

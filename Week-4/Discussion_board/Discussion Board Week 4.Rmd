@@ -1,0 +1,84 @@
+---
+title: 'Data 605 - Week 4'
+author: "Leticia Salazar"
+date: "2/16/2022"
+output:
+  html_document:
+    theme: journal
+    highlight: pygments
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Linear Algebra: Exercise C20
+
+#### C20 Determine if the linear transformation T: $P_{2}$  --> $M_{22}$ is (a) injective, (b) surjective, (c) invertible.
+
+**$$T(a + bx + cx^{2}) = \begin{bmatrix}a + 2b - 2c & 2a +2b\\ -a +b - 4c & 3a + 2b + 2c\end{bmatrix}$$**
+
+
+### Injective
+
+**Start by letting**
+$$T(a + bx + cx^{2}) = \begin{bmatrix}a + 2b - 2c & 2a +2b\\ -a +b - 4c & 3a + 2b + 2c\end{bmatrix} = \begin{bmatrix}0 & 0\\
+0 & 0 
+\end{bmatrix}$$ 
+
+**Then:** 
+
+(1) a  + 2b - 2c = 0
+
+(2) 2a + 2b      = 0
+
+(3) -a +  b - 4c = 0
+
+(4) 3a + 2b + 2c = 0
+
+**Combining first and third equation**
+
+(a  + 2b - 2c) - (-a +  b - 4c) 
+--> 3b - 6c = 0
+--> b = 2c 
+
+**Take the second equation and solve for a**
+
+2a + 2b = 0
+--> a = -b
+
+**Insert (a = -b) and (b = 2c) into equation 4:**
+
+3a + 2b + 2c = 0
+
+**Therefore:**
+
+a + bx + $cx^{2}$ = -b + bx + $\frac{b}{2}x^{2}$
+
+a + bx + $cx^{2}$ = -b (1 - x - $\frac{x}{2}^{2}$)
+
+null(T) = $\phi${(1 - x - $\frac{x}{2}^{2}$)}
+
+null(T) $\neq$ 0
+
+  
+**Solution: Using Theorem KILT we can conclude that *T* is not injective.** 
+
+Kernel of an Injective Linear Transformation: Suppose that T : U → V is a linear transformation. Then T is injective if and only if the kernel of T is trivial, K(T) = {0}
+
+
+### Surjective
+
+**Solution: Since dim($P_{2}$) = 3 < dim($M_{22}$) = 4 therefore, using Theorem SLTD Then *T* is not surjective**
+
+Surjective Linear Transformations and Dimension: Suppose that T : U → V is a surjective linear transformation. Then dim (U ) ≥ dim (V ).
+
+### Invertible
+
+**Solution: Since *T* is not surjective and according to Theorem ILTIS, then *T* is not invertible.**
+
+Invertible Linear Transformations are Injective and Surjective Suppose T : U → V is a linear transformation. Then T is invertible if and only if T is injective and surjective.

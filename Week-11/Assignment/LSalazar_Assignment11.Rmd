@@ -1,0 +1,131 @@
+---
+title: "Data 605 Assignment 11"
+author: "Leticia Salazar"
+date: "4/8/2022"
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    theme: flatly
+    highlight: pygments
+    toc: yes
+    toc_float: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+$~$
+
+### Regression Analysis
+
+#### Using the “cars” dataset in R, build a linear model for stopping distance as a function of speed and replicate the analysis of your textbook chapter 3 (visualization, quality evaluation of the model, and residual analysis.)
+
+$~$
+
+```{r, message = FALSE, warning = FALSE}
+# Load Libraries
+library(ggplot2)
+library(tidyverse)
+```
+
+```{r}
+# Loading dataset
+head(cars)
+```
+
+$~$
+
+### Description of Data Set
+
+#### A data frame with 50 rows and 2 columns:
+
+```{r}
+# glimpse of data
+glimpse(cars)
+```
+
+
+```{r}
+summary(cars)
+```
+
+
+$~$
+
+### Visualize the Data
+
+#### From the plot we see that as speed increase so does the distance.
+
+```{r}
+plot(cars$speed, cars$dist, xlab = 'Speed (mph)', ylab = 'Stopping Distance (ft)', 
+     main = 'Stopping Distance vs. Speed')
+```
+
+ 
+$~$
+
+### Linear Model Function
+
+#### In this linear model we notice that there's a negative y-intercept, therefore we are assuming that if the speed is 0 then the distance is 0 since there can't be a negative distance.
+```{r}
+cars_lm <- lm(dist ~ speed, data = cars)
+cars_lm
+```
+
+
+$~$
+
+### Linear Model Plot
+
+```{r}
+plot(cars$speed, cars$dist, xlab = 'Speed', ylab = 'Stopping Distance', 
+     main = 'Stopping Distance vs. Speed')
+abline(cars_lm)
+```
+
+
+#### We have the following output for summary of cars_lm:
+
+#### * According to the textbook: "The residuals are the differences between the actual measured values and the corresponding values on the fitted regression line.... we would expect residual values that are normally distributed around a mean of zero." Based on this, the residual distribution seems to be normally distributed.
+
+#### * For the standard error, the textbook mentiones that you'd want to see the value to be at "at least five to ten times smaller than the corresponding coefficient" From the summary (T-value) we see that the speed's coefficient matches this criteria.
+
+#### * The P-Value for both coefficients are also relevant to the model with a value close to 0.
+
+#### * Finally, the multiple $R^2$ is 65.11%, explaning the variance.
+```{r}
+summary(cars_lm)
+```
+
+$~$
+
+#### Residual Analysis
+
+
+```{r}
+# Plot of the residuals
+plot(cars_lm$fitted.values, cars_lm$residuals, xlab='Fitted Values', ylab='Residuals')
+abline(0,0)
+```
+
+
+```{r}
+# Q-Q Plot
+qqnorm(cars_lm$residuals)
+qqline(cars_lm$residuals)
+```
+
+
+$~$
+
+### Conclusion:
+
+#### From this analysis we can see that the residual model does a good job at exploring the data. For real world data you'd opt for other tests to be done to better analyze models. As per the analysis, this model shows a correlation between stopping distance and speed but it's only explaining 65.11% of the data, meaning there can be other factors that can influence the "normality" of this model.
+
+
+### References:
+
+* Lilja, David J; Linse, Greta M. (2022). Linear Regression Using R: An Introduction to Data Modeling, 2nd Edition. University of Minnesota Libraries Publishing. Retrieved from the University of Minnesota Digital Conservancy, https://hdl.handle.net/11299/189222.
+

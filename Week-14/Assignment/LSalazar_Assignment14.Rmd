@@ -1,0 +1,208 @@
+---
+title: "Data 605 - Assignment 14"
+author: "Leticia Salazar"
+date: "5/6/2022"
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    theme: flatly
+    highlight: pygments
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+$~$
+
+### Taylor Series Approximations
+
+#### This week, we'll work out some Taylor Series expansions of popular functions
+
+#### (1) $f(x) = \frac{1}{(1 - x)}$
+#### (2) $f(x) = e^x$
+#### (3) $f(x) = ln(1 + x)$
+#### (4) $f(x) = x^{(\frac{1}{2})}$
+
+#### For each function, only consider its valid ranges as indicated in the notes when you are computing the Taylor Series expansion. Please submit your assignment as an R- Markdown document.
+
+$~$
+
+
+### Manual work:
+
+#### Equation 1:
+
+$f(x)=\frac{1}{(1 - x)}$
+
+$f(a)=\frac{1}{1 - a}$ : $f(0) = 1$
+
+$f'(a)=\frac{1}{(1 - a)^2}$ : $f^{(1)}(0) = 1$
+
+$f''(a)=\frac{2}{(1 - a)^3}$ : $f^{(2)}(0) = 2$
+
+$f'''(a)=\frac{6}{(1 - a)^4}$ : $f^{(3)}(0) = 6$
+
+$f^{(4)}(a)=\frac{24}{(1 - a)^5}$ : $f^{(4)}(0) = 24$
+
+$= f(a)+f'(a)(x-a)+\frac{f''(a)}{2!}(x-a)^2+\frac{f'''(a)}{3!}(x-a)^3+...$
+
+generalized as:
+$f^{(n)}(x) = \frac{n!}{(1-x)^{n+1}}$
+
+substituting the general equation:
+$\frac{1}{1-x} \approx \sum_{n=0}^{\infty}\frac{n!}{(1-a)^{n+1}}\times \frac{(x-a)^n}{n!} = \frac{(x-a)^n}{(1-a)^n}$
+
+when a = 0 it becomes:
+$\frac{1}{1-x} \approx \sum_{n=0}^{\infty}x^n$
+
+
+$~$
+
+#### Equation 2:
+
+$f(x) = e^x$
+
+The derivative of $f(x) = e^x$ is $e^x$ and any derivative of $f^{(n)}(x)=e^x$ 
+
+At a = 0 it becomes:
+$\frac{1}{1-x} \approx \sum_{n=0}^{\infty}\frac{x^n}{n!}$
+
+$~$
+
+#### Equation 3: 
+
+$f(x) = ln(1+x)$
+
+$f(x) = ln(x)$
+
+$f^{(1)}(x) = \frac{1}{1+x}$ 
+
+$f^{(2)}(x) = \frac{-1}{(1+x)^2}$ 
+
+$f^{(3)}(x) = \frac{2}{(1+x)^3}$ 
+
+$f^{(4)}(x) = \frac{-6}{(1+x)^4}$
+
+
+generalized as: 
+$f^{(n)}(x) = (-1)^{n-1}\frac{(n-1)!}{(1+x)^n}$ 
+
+substitute to the general equation:
+$ln(1 + x) \approx \sum_{n = 0}^{\infty} (-1)^{n - 1} \frac{(n - 1)!}{(1 + a)^n}\times\frac{(x - a)^a}{n!} = (-1)^{n - 1}\frac{(x - a)^n}{n(1 + a)^n}$ 
+
+when a = 0 it becomes: 
+$ln(1+x) \approx \sum_{n=0}^{\infty}(-1)^{n-1}\frac{x^n} {n}$
+
+$~$
+
+#### Equation 4:
+
+$f(x) = x^{(\frac{1}{2})}$
+
+##### I was unsure how to approach this problem so I searched up help and this is how it was approached:
+
+defined as:
+$f(x) = f(a) + \frac{f'(a)}{1!}(x - a) + \frac{f''(a)}{2!}(x - a)^2 + \frac{f''"(a)}{3!}(x - a)^3 + ...$
+
+derivatives:
+$= 1 + \frac{\frac{1}{2}}{1!}(x - 1) + \frac{-\frac{1}{4}}{2!}(x - 1)^2 + \frac{\frac{3}{8}}{3!}(x - 1)^3 + \frac{-\frac{15}{16}}{4!}(x - 1)^4$
+
+refine:
+$= 1 + \frac{1}{2}(x - 1) - \frac{1}{8}(x - 1)^2 + \frac{1}{16}(x - 1)^3 - \frac{5}{128}(x - 1)^4 + ...$
+
+$~$
+
+### Using the pracma library for Taylor Series:
+```{r, warning = FALSE, message = FALSE}
+library(pracma)
+library(expm)
+```
+
+
+```{r}
+# Equation 1
+f <- function(x) (1/(1-x))
+p <- taylor(f, 0, 5)
+p
+sum(p)
+```
+
+
+```{r}
+x <- seq(-1, 8, length.out = 100)
+yf <- f(x)
+yp <- polyval(p, x)
+plot(x, yf, type = "l", main = "Taylor Series Approximation Equation 1", col = "blue", lwd = 3)
+lines(x, yp, col = "red")
+grid()
+```
+
+
+```{r}
+# Equation 2
+f_2 <- function(x) exp(x)
+p_2 <- taylor(f_2, 0, 5)
+p_2
+sum(p_2)
+```
+
+
+```{r}
+x_2 <- seq(-1, 8, length.out = 100)
+yf_2 <- f(x_2)
+yp_2 <- polyval(p_2, x_2)
+plot(x_2, yf_2, type = "l", main = "Taylor Series Approximation Equation 2", col = "blue", lwd = 3)
+lines(x_2, yp_2, col = "red")
+grid()
+```
+
+
+```{r}
+# Equation 3
+f_3 <- function(x) (log(1 + x))
+p_3 <- taylor(f_3, 0, 5)
+p_3
+sum(p_3)
+```
+
+
+```{r}
+x_3 <- seq(-1, 8, length.out = 100)
+yf_3 <- f(x_3)
+yp_3 <- polyval(p_3, x_3)
+plot(x_3, yf_3, type = "l", main = "Taylor Series Approximation Equation 3", col = "blue", lwd = 3)
+lines(x_3, yp_3, col = "red")
+grid()
+```
+
+
+```{r}
+# Equation 4
+f_4 <- function(x) {ifelse(x == 0, (1/2), f(x))}
+p_4 <- taylor(f_4, x0 = 0, n = 5)
+p_4
+sum(p_4)
+```
+
+```{r}
+x_4 <- seq(-1, 8, length.out = 100)
+yf_4 <- f(x_4)
+yp_4 <- polyval(p_4, x_4)
+plot(x_4, yf_4, type = "l", main = "Taylor Series Approximation Equation 4", col = "blue", lwd = 3)
+lines(x_4, yp_4, col = "red")
+grid()
+```
+
+### Thoughts:
+
+Do equation 4 make sense? Is there something I am missing or not doing correctly?
+
+### References:
+
+https://www.mathsisfun.com/algebra/taylor-series.html
+
+https://www.symbolab.com/solver/first-derivative-calculator/taylor%20x%5E%7B%5Cfrac%7B1%7D%7B2%7D%7D?or=input
+
+https://stackoverflow.com/questions/58495044/how-can-i-find-taylor-series-of-sqrt1x-1x/58495272#58495272

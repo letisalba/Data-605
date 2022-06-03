@@ -1,0 +1,74 @@
+---
+title: "Data 605 - Assignment 10"
+author: "Leticia Salazar"
+date: "4/1/2022"
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    theme: flatly
+    highlight: pygments
+    toc: yes
+    toc_float: yes  
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+$~$
+
+### Markov Chain
+
+$~$
+
+#### Smith is in jail and has 1 dollar; he can get out on bail if he has 8 dollars. A guard agrees to make a series of bets with him. If smith bets A dollars, he wins A dollars with probability .4 and loses A dollars with probability .6.
+
+#### Find the probability that he wins 8 dollars before losing all of his money if
+
+(a) he bets 1 dollar each time (timid strategy)
+(b) he bets, each time, as much as possible but not more than necessary to bring his fortune up to 8 dollars (bold strategy)
+(c) which strategy gives smith the better chance of getting out of jail?
+
+$~$
+
+### Solution:
+
+#### With the Markov Chain ($X_n n = 0, 1, ...$) will represent the evolution of Smith's money
+
+#### Parameters:
+```{r}
+# Probability Smith wins
+w <- .4
+
+# Probability Smith loses
+l <- .6
+
+# Bail amount needed in $
+n <- 8
+
+# Current amount in Smith's possession
+i <- 1
+```
+
+$~$
+
+#### Timid Strategy
+```{r}
+timid <- (1 - ((l / w)^ i)) / (1 - ((l / w)^ n))
+timid
+```
+$~$
+
+#### Bold Strategy
+```{r}
+# This strategy means that Smith has a probability of winning 3 times in a row
+bold <- w ^ 3
+bold
+```
+$~$
+
+#### Better Chance?
+#### Based on this, although risky, the bold strategy would give Smith a higher outcome to post bail with a 6.4% chance as opposed to 2.03% chance with the timid strategy.
+
+

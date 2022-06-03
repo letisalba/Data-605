@@ -1,0 +1,108 @@
+---
+title: "Data 605 - Week 10"
+author: "Leticia Salazar"
+date: "3/30/2022"
+output:
+  html_document:
+    theme: flatly
+    highlight: pygments
+    toc: yes
+    toc_float: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+$~$
+
+### Discussion Board: Chapter 11 Exercise 1 page 451
+
+$~$
+
+#### Define **P** and **y** by 
+
+$$P = \begin{pmatrix}0.5 & 0.5\\ 0.25 & 0.75\end{pmatrix}, y = \begin{pmatrix}1 \\ 0\end{pmatrix}$$
+
+#### Compute $Py, P^2y, and P^4y$ and show that the results are approaching a constant vector. What is this vector?
+
+$~$
+
+```{r, message=FALSE}
+# Load libraries
+
+# This library is from the package "expm" so please install if needed
+library(expm)
+```
+
+
+### Solution:
+
+```{r}
+# Create matrices
+
+P <- matrix(c(0.5, 0.25, 0.5, 0.75), nrow = 2)
+P
+
+y <- matrix(c(1, 0))
+y
+```
+
+
+
+$~$
+
+
+
+```{r}
+# Computing Py
+
+Py <- P %*% y
+Py
+```
+
+Visually this looks like the following:
+
+$$\begin{pmatrix}\frac{1}{2} & \frac{1}{2}\\ \frac{1}{4} & \frac{3}{4}\end{pmatrix} * 
+\begin{pmatrix}1\\ 0\end{pmatrix} = \begin{pmatrix}\frac{1}{2}\\ \frac{1}{4}\end{pmatrix} = \begin{pmatrix}0.5\\ 0.25\end{pmatrix}$$
+
+
+
+$~$
+
+
+
+```{r}
+# Computing P{^2}y
+P2y <- (P %^% 2) %*% y
+P2y
+```
+
+Visually this looks like the following:
+
+$$\begin{pmatrix}\frac{1}{2} & \frac{1}{2}\\ \frac{1}{4} & \frac{3}{4}\end{pmatrix} * 
+\begin{pmatrix}\frac{1}{2}\\ \frac{1}{4}\end{pmatrix} = \begin{pmatrix}\frac{3}{8}\\ \frac{5}{16}\end{pmatrix} = \begin{pmatrix}0.375\\ 0.3125\end{pmatrix}$$
+
+
+
+$~$
+
+
+
+```{r}
+# Computing P{^4}y
+P4y <- (P %^% 4) %*% y
+P4y
+```
+
+Visually this looks like the following:
+
+$$\begin{pmatrix}\frac{1}{2} & \frac{1}{2}\\ \frac{1}{4} & \frac{3}{4}\end{pmatrix} * 
+\begin{pmatrix}\frac{3}{8}\\ \frac{5}{16}\end{pmatrix} = \begin{pmatrix}\frac{11}{32}\\ \frac{21}{64}\end{pmatrix} = \begin{pmatrix}0.34375\\ 0.328\end{pmatrix}$$
+
+and one more time:
+$$\begin{pmatrix}\frac{1}{2} & \frac{1}{2}\\ \frac{1}{4} & \frac{3}{4}\end{pmatrix} * 
+\begin{pmatrix}\frac{11}{32}\\ \frac{21}{64}\end{pmatrix} = \begin{pmatrix}\frac{43}{128}\\ \frac{85}{256}\end{pmatrix} = \begin{pmatrix}0.3359\\ 0.3320\end{pmatrix}$$
+
+$~$
+
+#### The approaching contant vector is $\frac{1}{3}$.

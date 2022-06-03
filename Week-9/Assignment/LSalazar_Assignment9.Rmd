@@ -1,0 +1,86 @@
+---
+title: "Data 605 - Assignment 9"
+author: "Leticia Salazar"
+date: "3/25/2022"
+output:
+  html_document:
+    theme: flatly
+    highlight: pygments
+    toc: yes
+    toc_float: yes  
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Central Limit Theorem & Generating Functions:
+
+### 1. Exercise 11 page 363
+
+The price of one share of stock in the Pilsdorff Beer Company (see Exercise 8.2.12) is given by $Y_n$ on the _n_th day of the year. Finn observes that the differences $X_n = Y_{n + 1} - Y_n$ appear to be independent random variables with a common distribution having mean $\mu = 0$ and variance $\sigma = 1 / 4$. If $Y_1$ = 100, estimate the probability that $Y_{365}$ is:
+
+(a) $\ge 100$
+
+(b) $\ge 110$
+
+(c) $\ge 120$
+
+**Solutions:**
+
+```{r}
+# greater than or equal to 100
+1 - pnorm((100 - 100) / (0.5 * sqrt(365 - 1)))
+
+# greater than or equal to 110
+1 - pnorm((110 - 100) / (0.5 * sqrt(365 - 1)))
+
+# greater than or equal to 120
+1 - pnorm((120 - 100) / (0.5 * sqrt(365 - 1)))
+```
+Probability that $Y_365$ for $\ge 100$ is 0.5, for $\ge 110$ it's 0.147 and for $\ge 120$ it's 0.0180.
+
+### 2. Calculate the expected value and variance of the binomial distribution using the moment generating function.
+
+The moment generating function (MGF) is: $M_z (t) = Expected(e^{tx})$
+
+The binomial probability mass function (PMF) is: $P_x = \binom{n}{x}p^x (1 - p)^{n - x}$
+
+The combination of MGF and PMF is: $M_z (t) = \sum_{x = 0}^{n} e^{tx} * \binom{n}{x}p^x (1 - p)^{n - x}$
+
+Simplified when t is a real number: M(t) = $(pe^t + 1 - p)^n$
+
+First instant of expected value: M'(t) = $npe^t(pe^t - p + 1)^{n-1}$
+
+At 0 we get this expected value: M'(0) = $npe^0(pe^0 - p + 1)^{n-1} = np(p - p + 1)^{n - 1} = np(1)^{n - 1} = np$ 
+
+For the variance:
+
+$M^n(t) = npe^t(pe^t - p + 1)^{n-2}(npe^t -p +1)$
+
+
+$M^n(0) = npe^0(pe^0 - p + 1)^{n-2}(npe^0 -p +1) = np(np - p + 1)$
+
+Therefore the expected binomial distribution is *np* and the variance is *np(np - p + 1)*. 
+
+### 3. Calculate the expected value and variance of the exponential distribution using the moment generating function.
+
+The exponential distribution: $\lambda e^{-\lambda x}$ when x $\ge 0$ 
+
+$M(t)=\int^\inf_0e^{tx}*\lambda e^{-\lambda x}=-\frac{\lambda}{t-\lambda}$
+
+The expected value evaluated at 0: $M'(t) = \dfrac{\lambda}{(t-\lambda)^2}$
+
+$M'(0) = 1$
+
+$M^n(t) = -\dfrac{2\lambda}{(t-\lambda)^3}$
+
+$M^n(0) = -\dfrac{2\lambda}{(-\lambda)^3} = 2 / \lambda ^2$
+
+The expected value is $1 / \lambda$ and the variance is $2 / \lambda ^2$
+
+### References:
+
+Some good explanation for MGF https://towardsdatascience.com/moment-generating-function-explained-27821a739035

@@ -1,0 +1,774 @@
+---
+title: "Data 605 - Final Exam"
+author: "Leticia Salazar"
+date: "5/14/2022"
+output:
+  html_document:
+    theme: simplex
+    highlight: kate
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+$~$
+
+#### **Loading libraries**
+```{r, warning = FALSE, message = FALSE}
+
+# For Problem 1
+library(igraph)
+library(openintro)
+library(Matrix)
+
+# For Problem 2
+library(OpenImageR)
+library(caret)
+library(nnet)
+
+# For Problem 3
+library(MASS)
+library(matrixcalc)
+library(GGally)
+
+# For all Problems
+library(ggplot2)
+library(tidyverse)
+library(hrbrthemes)
+```
+
+$~$
+
+### **Problem 1 Playing with PageRank**
+$~$
+
+#### 1. **PAGERANK: THE MATH BEHIND GOOGLE SEARCH**
+
+#### PageRank is an algorithm used by Google Search to rank websites in their search engine results. PageRank was named after Larry Page, one of the founders of Google. It is a way of measuring the importance of website pages. PageRank works by counting the number and quality of links to a webpage to determine a rough estimate of how important the website is. The underlying assumption is that more important websites are likely to receive more links from other websites.
+
+#### PageRank can be viewed from two completely equivalent perspectives - both resulting in the same set of equations. In the first formulation, the PageRank of a webpage is the sum of all the PageRanks of the pages pointing to it, together with a small decay factor. In the original formulation of the algorithm, the PageRank of a page $P_i$, denoted by $r(P_i)$, is the sum of the PageRanks of all pages pointing into $P_i$.
+
+
+#### $r(P_i) = \displaystyle \sum_{P_j \in B_{P_i}} \frac{r(P_j)}{|P_j|}$
+
+
+#### Where $B_{Pi}$ is the set of pages pointing into $P_i and  |P_i|$ is the number of outlinks from $P_i$.
+
+#### As we can see, this is a recursive definition. In order to solve this, we initiate the process with all pages having equal PageRanks and repeat this process till it converges to some final stable value. Let’s consider a small example web with only 6 URLs. The bi-directional arrows indicate that these pages have links with each other. That is, Page 1 has a link to Page 3 and Page 3 links back to Page 1, in this example.
+
+
+#### Table 1 shows the PageRank results after first few iterations of the calculation.
+
+![](/Users/letiix3/Desktop/Data-605/Week-15/Final_Exam_Images/Q1_Table 1.png)
+
+$~$
+
+![](/Users/letiix3/Desktop/Data-605/Week-15/Final_Exam_Images/Q1_F1.png)
+
+
+#### 1.1 **PageRank - Transition Matrix**. The above iterative approach calculates the PageRank one page at a time. Using matrices, we can perform all these calculations in parallel and each iteration, compute the PageRank vector. In order to accomplish this, we introduce an n × n matrix A and an 1 × n vector r which represents the PageRank of all the n pages. The A matrix is row normalized such that each element $A_{ij} = \frac{1}{|P_i|}$ if there is a link from page i to page j and 0 otherwise. Note that this can be interpreted as the probability of clicking one of the links in page i at random. For our example, the A matrix is given below
+
+#### $$A = \begin{bmatrix}0 & \frac{1}{2} & \frac{1}{2} & 0 & 0 & 0\\ 0 & 0 & 0 & 0 & 0 & 0\\ \frac{1}{3} & \frac{1}{3} & 0 & 0 & \frac{1}{3} & 0\\ 0 & 0 & 0 & 0 & \frac{1}{2} & \frac{1}{2}\\ 0 & 0 & 0 & \frac{1}{2} & 0 & \frac{1}{2}\\ 0 & 0 & 0 & 1 & 0 & 0 \end{bmatrix}$$
+
+#### In the above matrix, the non-zero row elements correspond to the outlinks from the corresponding page whereas inlinks are given in the corresponding columns. We can now perform the iterative calculation for PageRank using matrix algebra.
+
+#### Let $r_i$ be the initial rank of the URLs. Let’s set ri = (.167, .167, .167, .167, .167, .167). One can also read this as the initial probability that a user will chose one of these pages. After one click (i.e. following a link), the probability of finding a user on a page is simply
+
+$r_f = A * r_i = \begin{bmatrix} 0.0556 \\ 0.139 \\ 0.0835 \\ 0.25 \\ 0.139\\ 0.167 \end{bmatrix}$
+
+
+#### After n steps, $r_f$ becomes: $r_f = (A)^n * r_i$
+
+#### You can see that as we run through these iterations, the ranks of the pages converge and stabilize. The final PageRank of webpages are the solution to the equation r = A * r. The PageRank of a page can be seen as simply the probability of finding a user randomly landing on a page based on the link structure of the web.
+
+#### Let r = (r1, r2, r3, r4, r5, r6) be the final probability vector. We want r such that r = A * r. If you notice, this resembles an eigenvalue decomposition with $\lambda$ = 1. That is, if the matrix A has an eigenvalue of 1 then we can find a solution. Does the A matrix have an eigenvalue of 1? Is it guaranteed to always have it? Under what conditions do we find an eigenvalue of 1 and is the resulting eigenvector(s) unique? If so, we can claim that there is a unique PageRank for web pages. Furthermore, we have dealt with situations where all the pages are connected. What happens if the pages are disjoint? Do we still get a PageRank? Can we even run the power iteration calculations in such cases?
+
+#### **What happens if the web-pages are disconnected?** When the link structure of the web is such that pages are disconnected into disjoint sets, then the solution we get from running the power iterations (or eigen value calculations) is equivalent to considering independent universes of web graphs, each with its own PageRank ordering and no connections between the disjoint groups. We can easily verify that in a disjoint system show below.
+
+#### In order to handle these types of disjoint graphs, Page and Brin came up with the concept of decay, shown in Equation 5 below. This was the insight of Page and Brin to handle the degenerate cases. It makes the transition matrix well-behaved and have rows that sum to 1. Each row represents the probability of transferring from one URL to another URL. They introduce a new matrix B which is a decayed version of the original matrix A (meaning each element of A is multiplied by a number smaller than unity) together with a uniform vector of length n which assigns some finite probability for reaching any web page at random. To make every row add up to unity, the uniform probability is properly adjusted to be (1 − d) where d is the decay applied to the original transition matrix A. In the classic version by Page and Brin, they chose d = 0.85.
+
+#### $B = 0.85 * A + \frac{0.15}{n}$
+
+
+![](/Users/letiix3/Desktop/Data-605/Week-15/Final_Exam_Images/Q1_F2.png)
+
+#### This new matrix B has no breakages in the graph and it introduces weak links between all pages and running power iteration on this matrix results in a single PageRank vector for all web pages.
+
+$~$
+
+#### 2. **PAGERANK ALGORIHM USER MODEL**
+
+#### This new matrix B can be interpreted as follows
+
+#### (1) 85% of the time, users will randomly follow a link on a URL.
+#### (2) 15% of the time, they’ll randomly jump to some new URL that is not
+
+#### This approach makes intuitive sense and more importantly, makes the matrix wellbehaved. Now, let’s revisit the eigenvalue interpretation. Does the matrix B have an eigenvalue of 1? Under what conditions is it guaranteed to have an eigenvalue of 1. If it does not have a unity eigenvalue, then our power iterations are not going to converge and we cannot calculate a PageRank.
+
+#### 2.1 **Perron Frobenius Theorem.** Perron and Frobenius proved that if a square matrix M has positive entries then it has a unique largest real eigenvalue and the corresponding eigenvector has strictly positive components. All other eigenvalues of M are smaller than this largest eigenvalue. Further if M is a positive, row stochastic matrix, then:
+
+#### * 1 is an eigenvalue of multiplicity one
+#### * 1 is the largest eigenvalue: all the other eigenvalues are in modulus smaller than 1. 
+#### * The eigenvector corresponding to eigenvalue 1 has all positive entries. In particular, for the eigenvalue 1 there exists a unique eigenvector with the sum of its entries equal to 1.
+
+#### A row stochastic matrix is a matrix where any row sums to 1. The way we constructed matrix B, we can rely on Perron Frobenius theorem that B is guaranteed to have a unique eigenvalue of 1 with all positive eigenvectors which sum to 1, neatly completing the picture for us. This gives a unique ranking of web pages, or the PageRank of the web.
+
+
+#### 2.2 **PageRank Random Walk model - from Wikipedia.** If web surfers who start on a random page have an 85% likelihood of choosing a random link from the page they are currently visiting, and a 15% likelihood of jumping to a page chosen at random from the entire web, they will reach Page E 8.1% of the time. (The 15% likelihood of jumping to an arbitrary page corresponds to a damping factor of 85%.) Without damping, all web surfers would eventually end up on Pages A, B, or C, and all other pages would have PageRank zero. In the presence of damping, Page A effectively links to all pages in the web, even though it has no outgoing links of its own.
+
+![](/Users/letiix3/Desktop/Data-605/Week-15/Final_Exam_Images/Q2_F3.png)
+$~$
+
+#### **Playing with PageRank**
+
+#### You’ll verify for yourself that PageRank works by performing calculations on a small universe of web pages.
+#### Let’s use the 6 page universe that we had in the previous discussion For this directed graph, perform the following calculations in R.
+
+$~$
+
+#### Form the A matrix. Then, introduce decay and form the B matrix as we did in the course notes. (5 Points)
+
+```{r}
+# create matrix
+
+A <- matrix(c(0, (1/2), (1/2), 0, 0, 0, 0, 0, 0, 0, 0, 0, (1/3), (1/3), 0, 0, (1/3), 0, 0, 0, 0, 0, (1/2), (1/2), 0, 0, 0, (1/2), 0, (1/2), 0, 0, 0, 1, 0, 0), nrow = 6, byrow = T)
+A
+#formatC(A, format = "f", digits = 4)
+```
+
+##### Being that the second row is filled with 0's we are replacing the vector of 1/6 since there are 6 webpages and we have an equal probability of landing on any of the pages.
+
+```{r}
+n <- 6 # number of webpages
+
+# creating new row to replace matrix A second row
+row2 <- rep(1/6, n)
+
+# Removing second row from matrix A
+A_2 <- A[-2,]
+
+# Adding r into the second row and creating matrix A_2
+A_2 <- matrix(rbind(A_2[1,], row2, A_2[- (1), ]), 6)
+A_2
+
+#A_2 <- A + (apply(A, 1, sum) !=1) * 1 / n
+#formatC(A_2, format = "f", digits = 4)
+```
+
+
+```{r}
+# decay form B matrix
+decay <- 0.85 
+n <- nrow(A_2)
+
+B <- decay * A_2 + ((1 - decay) / n)
+formatC(B, format = "f", digits = 4)
+```
+$~$
+
+#### Start with a uniform rank vector r and perform power iterations on B till convergence. That is, compute the solution $r = B^n * r$. Attempt this for a sufficiently large n so that r actually converges. (5 Points)
+
+```{r}
+# We will take the second row of 0.167 to perform the iterations on B when r = B^n * r
+
+# We'll do a couple of iterations increasing by 10 starting at 0
+n <- 0
+r_0 <- matrix.power(t(B), n) %*%  row2
+r_0
+
+n <- 10
+r_10 <- matrix.power(t(B), n) %*%  row2
+r_10
+
+n <- 20
+r_20 <- matrix.power(t(B), n) %*% row2
+r_20
+
+n <- 30
+r_30 <- matrix.power(t(B), n) %*% row2
+r_30
+
+n <- 40
+r_40 <- matrix.power(t(B), n) %*% row2
+r_40
+
+n <- 50
+r_50 <- matrix.power(t(B), n) %*% row2
+r_50
+
+# By iteration 30 we found the convergence
+iter_converg <- matrix.power(t(B), 30) %*% row2
+```
+
+$~$
+
+
+#### Compute the eigen-decomposition of B and verify that you indeed get an eigenvalue of 1 as the largest eigenvalue and that its corresponding eigenvector is the same vector that you obtained in the previous power iteration method. Further, this eigenvector has all positive entries and it sums to 1.(10 points)
+
+```{r}
+eigen_decomp <- eigen(B)
+eigen_decomp
+
+# turning values as numeric and getting the max value of 1
+max_value_decomp <- which.max(eigen(B)$values)
+print(paste('The largest eigenvalue is', max(max_value_decomp)))
+
+# corresponding vector of max eigenvalue
+eigen_decomp2 <- as.numeric((1/sum(eigen_decomp$vectors[,1]))*eigen_decomp$vectors[,1])
+sum(eigen_decomp2)
+```
+
+$~$
+
+#### Use the graph package in R and its page.rank method to compute the Page Rank of the graph as given in A. Note that you don’t need to apply decay. The package starts with a connected graph and applies decay internally. Verify that you do get the same PageRank vector as the two approaches above. (10 points)
+
+```{r}
+# Here we are using the library 'igraph' installed at the begining to complete the question
+
+#graph_A <- graph.adjacency(A, weighted = T)
+graph_A <- graph_from_adjacency_matrix(A, weighted = T)
+plot(graph_A)
+```
+
+
+```{r}
+# verifying that you get the same PageRank vector as the two approached above
+pageRank <- page.rank(graph_A)$vector
+
+results <- (round(iter_converg, 4) == round(pageRank, 4))
+results
+```
+
+
+$~$
+
+### **Problem 2 Digit Recognition**
+
+### **Step 1 and 2:** 
+###### Go to Kaggle.com and build an account if you do not already have one. It is free. Go to https://www.kaggle.com/c/digit-recognizer/overview, accept the rules of the competition, and download the data. You will not be required to submit work to Kaggle, but you do need the data.'MNIST ("Modified National Institute of Standards and Technology") is the de facto “hello world” dataset of computer vision. Since its release in 1999, this classic dataset of handwritten images has served as the basis for benchmarking classification algorithms. As new machine learning techniques emerge, MNIST remains a reliable resource for researchers and learners alike.”
+
+
+```{r}
+# Load data set from computer, file is too large to upload to free github account
+
+# for knitting purposes I am not printing out the entire data set because it is too long. 
+train <- read.csv('/Users/letiix3/Desktop/Data-605/Week-15/digit-recognizer/train.csv')
+head(train[1:15], n = 5) # set to load columns 1-10 and 5 rows
+```
+
+$~$
+
+### **Step 3:** 
+###### Using the training.csv file, plot representations of the first 10 images to understand the data format. Go ahead and divide all pixels by 255 to produce values between 0 and 1. (This is equivalent to min-max scaling.) (5 points)
+
+```{r}
+# label is the first column and divide all pixels by 255
+labels = train[,1]
+train_data <- train[,-1]/255
+
+# dimensions of data frame
+dim(train_data)
+```
+
+
+```{r, warning = FALSE}
+# creating a plot to see how one image looks
+image1 <- matrix(unlist(train_data[10, -1]), nrow = 28, byrow = T)
+image(image1, col = grey.colors(255))
+
+# image must be rotated 
+rotate <- function(x) t(apply(x, 2, rev))
+
+# final product; will be using this code to apply it to the first 10 images
+image1 <- rotate(matrix(unlist(train_data[10, -1]), nrow = 28, byrow = T))
+image(image1, col = grey.colors(255))
+```
+
+
+```{r, warning = FALSE}
+# Apply code above to images 1:10 of the whole data set
+par(mfrow = c (2, 5))
+
+# images must be rotated
+rotate <- function(x) t(apply(x, 2, rev))
+
+# Using a for loop for all 10 images
+for (i in 1:10){
+  m <- rotate(matrix(unlist(train_data[i, -1]), nrow = 28, byrow = T))
+  image(m, col = grey.colors(255))
+}
+```
+
+$~$
+
+### **Step 4:** 
+###### What is the frequency distribution of the numbers in the dataset? (5 points)
+
+The frequency distribution of the numbers ranges between 0.095 - 0.11.
+
+```{r}
+train_frequency <- as.data.frame(table(labels)/42000)
+
+# bar graph for frequency distribution
+train_frequency %>% 
+  ggplot(aes(x = labels, y = Freq, fill = Freq)) +
+  geom_bar(stat = 'identity') +
+  scale_fill_gradient(low = "blue", high = "red")
+
+table(labels)/42000
+```
+
+$~$
+
+### **Step 5:** 
+###### For each number, provide the mean pixel intensity. What does this tell you? (5 points)
+
+Based on this I am going to assume the low values means the mean of each number are closer to the center of the images.
+```{r}
+# Using colMeans() I was only getting 0's.
+colMeans(train_data)[1:20]
+```
+
+$~$
+
+### **Step 6:** 
+###### Reduce the data by using principal components that account for 95% of the variance. How many components did you generate? Use PCA to generate all possible components (100% of the variance). How many components are possible? Why? (5 points)
+
+```{r}
+# covariance
+train_cov <- train_data
+
+# pca
+train_pca <- prcomp(train_cov)
+train_cumvar <- (cumsum(train_pca$sdev^2) / sum(train_pca$sdev^2))
+
+# 95% variance
+cumvar_95 <- which.max(train_cumvar >= .95)
+print(paste0("At 95% variance there were ", (cumvar_95), " components generated."))
+
+# 100% variance
+print(paste0("At 100% variance thereshould be 784 components generated representing each column in the dataset."))
+
+plot(train_cumvar)
+```
+
+$~$
+
+### **Step 7:** 
+###### Plot the first 10 images generated by PCA. They will appear to be noise. Why? (5 points)
+
+Images generated by PCA typically have noise.
+
+```{r}
+par(mfrow = c (2, 5))
+
+# images must be rotated
+rotate <- function(x) t(apply(x, 2, rev))
+
+# Using my for loop it reproduced static only
+for (i in 1:10){
+ image(1:28, 1:28, array(train_pca$x[,i], dim = c(28, 28)))
+}
+
+# Using code from another student you can visualize more of a number that's blurry
+for (i in 1:10){
+  img <- matrix(train_pca$rotation[1:784], nrow = 28, ncol = 28)
+  image(img, useRaster = T, axes = F)
+}
+```
+
+
+$~$
+
+### **Step 8:** 
+###### Now, select only those images that have labels that are 8’s. Re-run PCA that accounts for all of the variance (100%). Plot the first 10 images. What do you see? (5 points)
+
+You see a more pronounced figure 8.
+
+```{r}
+# Selecting only the 8's
+eights <- train_data %>% 
+  filter(labels == 8)
+eights <- eights[,2:ncol(eights)]
+
+# Reducing pixels to 255
+eights_reduced <- eights / 255
+eights_pca <- prcomp(eights_reduced)
+
+# 
+eights_cumvar <- (cumsum(eights_pca$sdev^2) / sum(eights_pca$sdev^2))
+
+# 100% variance
+eights_100 <- which.max(eights_cumvar >= 1)
+eights_100
+
+plot(eights_cumvar)
+```
+
+
+```{r, warning = FALSE}
+par(mfrow = c (2, 5))
+
+# images must be rotated
+rotate <- function(x) t(apply(x, 2, rev))
+
+# When using my code, same thing happens as before
+for (i in 1:10){
+  m <- rotate(matrix(eights_pca$x[,i], nrow = 28, byrow = T))
+  image(m, col = grey.colors(255))
+}
+
+for (i in 1:10){
+  img <- matrix(eights_pca$rotation[1:784], nrow = 28, ncol = 28)
+  image(img, useRaster = T, axes = F)
+}
+```
+
+
+$~$
+
+### **Step 9:** 
+###### An incorrect approach to predicting the images would be to build a linear regression model with y as the digit values and X as the pixel matrix. Instead, we can build a multinomial model that classifies the digits. Build a multinomial model on the entirety of the training set. Then provide its classification accuracy (percent correctly identified) as well as a matrix of observed versus forecast values (confusion matrix). This matrix will be a 10 x 10, and correct classifications will be on the diagonal. (10 points)
+
+```{r}
+# create model
+train_label <- as.factor(train$label)
+train_data <- train[2:785] / 255
+train_data_label <- train$label
+
+model <- nnet::multinom(labels ~., data = train_data, MaxNWts = 10000000)
+```
+
+
+The accuracy of the confusion matrix is 92.45%
+```{r}
+# make the prediction and confusion matrix
+prediction_model <- predict(model, train_data)
+confusionMatrix(prediction_model, train_label)
+```
+
+
+$~$
+
+### **Problem 3 Kaggle Competition**
+
+
+##### You are to compete in the House Prices: Advanced Regression Techniques competition https://www.kaggle.com/c/house-prices-advanced-regression-techniques. I want you to do the following:
+
+$~$
+
+### **Descriptive and Inferential Statistics** 
+
+##### Provide univariate descriptive statistics and appropriate plots for the training data set. Provide a scatterplot matrix for at least two of the independent variables and the dependent variable. Derive a correlation matrix for any three quantitative variables in the dataset. Test the hypotheses that the correlations between each pairwise set of variables is 0 and provide an 80% confidence interval. Discuss the meaning of your analysis. Would you be worried about familywise error? Why or why not? 5 points
+
+```{r}
+# Read csv file renaming train.csv to house_train
+house_train <- read.csv('/Users/letiix3/Desktop/Data-605/Week-15/House_Price/train.csv', header = T, sep = ",")
+head(house_train[1:15], n = 5)
+```
+
+
+```{r}
+# glimpse of data set columns 1 - 10
+glimpse(house_train[1:10])
+```
+
+
+```{r}
+# summary of data set with filter of numeric values only
+house_train %>%
+  select_if(is.numeric) %>%
+  summary()
+```
+
+$~$
+
+```{r}
+# plot to see overview of SalePrice
+house_train%>%
+  ggplot( aes(x = SalePrice)) +
+    geom_histogram( binwidth = 30,  fill = "pink", color = "#e9ecef", alpha = 0.9) +
+    ggtitle("Histogram of 'SalePrice'") +
+    theme_ipsum() +
+    theme(
+      plot.title = element_text(size = 15)
+    )
+```
+
+
+```{r}
+# selecting random columns to create a Correlogram
+house_train%>%
+ggpairs(columns = 44:53, ggplot2::aes(colour = 'species')) 
+```
+
+
+$~$
+
+##### Provide a scatterplot matrix for at least two of the independent variables and the dependent variable.
+```{r}
+colnames(house_train)
+```
+
+
+```{r}
+# plot for SalePrice and LotArea
+house_train %>%
+ggplot(aes(x = SalePrice, y = LotArea, color = YearBuilt)) + 
+    geom_point(size = 3) +
+    geom_smooth(method = "lm", color = 'red') +
+    theme_ipsum()
+```
+
+
+```{r}
+# plot for YearBuilt and SalePrice
+house_train %>%
+ggplot(aes(x = YearBuilt, y = SalePrice, color = YrSold)) + 
+    geom_point(size = 3) +
+    geom_smooth(method = "lm", color = 'red') +
+    theme_ipsum()
+```
+
+$~$
+
+##### Derive a correlation matrix for any three quantitative variables in the dataset. 
+```{r}
+cor_house <- house_train %>%
+  dplyr::select(LotArea, YearBuilt, X1stFlrSF)
+cor_m <- cor(cor_house)
+cor_m
+```
+
+$~$
+
+##### Test the hypotheses that the correlations between each pairwise set of variables is 0 and provide an 80% confidence interval. Discuss the meaning of your analysis. Would you be worried about familywise error? Why or why not?
+
+Based on the tests below, we can reject the null hypothesis that states that the correlation is zero and accept the alternative hypothesis. We should be worried about familywise error.
+```{r}
+cor.test(house_train$LotArea, house_train$YearBuilt, conf.level = 0.8)
+```
+
+
+```{r}
+cor.test(house_train$LotArea, house_train$X1stFlrSF, conf.level = 0.8)
+```
+
+
+```{r}
+cor.test(house_train$X1stFlrSF, house_train$YearBuilt, conf.level = 0.8)
+```
+
+$~$
+
+### **Linear Algebra and Correlation**
+
+##### Invert your correlation matrix from above. (This is known as the precision matrix and contains variance inflation factors on the diagonal.) Multiply the correlation matrix by the precision matrix, and then multiply the precision matrix by the correlation matrix. Conduct LU decomposition on the matrix. 5 points
+```{r}
+# invert correlation matrix from above
+invert_cor <- solve(cor_m)
+invert_cor
+
+# precision
+precision_cor <- round(cor_m %*% invert_cor)
+precision_cor
+
+# LU decomposition
+lu_decom_cor <- lu.decomposition(cor_m)
+lu_decom_cor
+```
+
+$~$
+
+### **Calculus-Based Probability & Statistics** 
+
+##### Many times, it makes sense to fit a closed form distribution to data. Select a variable in the Kaggle.com training dataset that is skewed to the right, shift it so that the minimum value is absolutely above zero if necessary. Then load the MASS package and run fitdistr to fit an exponential probability density function. (See https://stat.ethz.ch/R-manual/Rdevel/library/MASS/html/fitdistr.html ). Find the optimal value of λ for this distribution, and then take 1000 samples from this exponential distribution using this value (e.g., rexp(1000, λ)). Plot a histogram and compare it with a histogram of your original variable. Using the exponential pdf, find the 5th and 95th percentiles using the cumulative distribution function (CDF). Also generate a 95% confidence interval from the empirical data, assuming normality. Finally, provide the empirical 5th percentile and 95th percentile of the data. Discuss. 10 points
+
+```{r}
+# Select a variable in the Kaggle.com training dataset that is skewed to the right, shift it so that the minimum value is absolutely above zero if necessary.
+
+house_train%>%
+  filter(OpenPorchSF < 350) %>%
+  ggplot( aes(x = OpenPorchSF)) +
+    geom_histogram( binwidth = 15,  fill = "purple", color = "#e9ecef", alpha = 0.9) +
+    ggtitle("Histogram of 'OpenPorchSF'") +
+    theme_ipsum() +
+    theme(
+      plot.title = element_text(size=15)
+    )
+```
+
+
+```{r}
+# exponential distribution
+expon_OpenPorchSF <- fitdistr(house_train$OpenPorchSF, 'exponential')
+
+# lambda
+lamb_OpenPorchSF <- expon_OpenPorchSF$estimate
+lamb_OpenPorchSF
+
+# sample of 1000
+
+exp_samp <- rexp(1000, lamb_OpenPorchSF)
+summary(exp_samp)
+```
+
+
+```{r}
+# Plot histogram and compare it with original histogram
+hist(exp_samp, main = "Histogram of Exponential Sample of 'OpenPorchSF'")
+```
+
+$~$
+
+##### Using the exponential pdf, find the 5th and 95th percentiles using the cumulative distribution function (CDF). Also generate a 95% confidence interval from the empirical data, assuming normality. Finally, provide the empirical 5th percentile and 95th percentile of the data. Discuss.
+
+```{r}
+# 5th and 95th percentiles
+lower <- qexp(0.05, lamb_OpenPorchSF)
+lower
+
+upper <- qexp(0.95, lamb_OpenPorchSF)
+upper
+
+# empirical 5th and 95th percentile
+quantile(house_train$OpenPorchSF, c(0.05, 0.95))
+print(paste('The 5th percentile is 0.00 and the 95th percentile is 175.05.'))
+```
+
+$~$
+
+### **Modeling**
+
+##### Build some type of multiple regression model and submit your model to the competition board. Provide your complete model summary and results with analysis. Report your Kaggle.com username and score. 10 points
+
+
+```{r}
+# selection columns that are numeric only
+house_train2 <- house_train %>% 
+  dplyr::select_if(is.numeric)
+
+# Check for missing values in data 
+colSums(is.na(house_train2))
+```
+
+```{r}
+model_house <- lm(SalePrice ~., house_train2)
+summary(model_house)
+```
+
+```{r}
+plot(model_house)
+```
+
+
+```{r}
+model_house2 <- lm(SalePrice ~ MSSubClass + LotFrontage + LotArea +  OverallQual + OverallCond + YearBuilt + YearRemodAdd + MasVnrArea + BsmtFinSF1 + BsmtFinSF2 + BsmtUnfSF + TotalBsmtSF + X1stFlrSF + X2ndFlrSF + LowQualFinSF + GrLivArea + BsmtFullBath + BsmtHalfBath + FullBath + HalfBath + BedroomAbvGr + KitchenAbvGr + TotRmsAbvGrd + Fireplaces + GarageYrBlt + GarageCars + GarageArea + WoodDeckSF + OpenPorchSF + EnclosedPorch + X3SsnPorch + ScreenPorch + PoolArea + MiscVal + MoSold + YrSold, house_train2)
+summary(model_house2)
+```
+
+```{r}
+plot(model_house2)
+```
+
+
+```{r}
+# Using only significant columns
+model_house3 <- lm(SalePrice ~ MSSubClass + LotFrontage + LotArea +  OverallQual + OverallCond + YearBuilt + MasVnrArea + BsmtFinSF1 + X1stFlrSF + X2ndFlrSF + BsmtFullBath + BedroomAbvGr + KitchenAbvGr + TotRmsAbvGrd + Fireplaces + GarageCars + WoodDeckSF + ScreenPorch + PoolArea, house_train2)
+summary(model_house3)
+```
+
+```{r}
+plot(model_house3)
+```
+
+
+```{r}
+# Removing 2 more columns 
+model_house4 <- lm(SalePrice ~ MSSubClass + LotArea +  OverallQual + OverallCond + YearBuilt + MasVnrArea + BsmtFinSF1 + X1stFlrSF + X2ndFlrSF + BsmtFullBath + BedroomAbvGr + KitchenAbvGr + TotRmsAbvGrd + GarageCars + WoodDeckSF + ScreenPorch + PoolArea, house_train2)
+summary(model_house4)
+```
+
+
+```{r}
+# Using model_house4 we'll create a scatterplot
+plot(model_house4)
+```
+
+$~$
+
+```{r}
+# Predict prices for test data
+house_test <- read.csv('/Users/letiix3/Desktop/Data-605/Week-15/House_Price/test.csv')
+house_test2 <- house_test %>%
+  dplyr::select_if(is.numeric) %>%
+  replace(is.na(.),0)
+
+prediction <- predict(model_house4, house_test2, type = "response")
+head(prediction)
+
+# Prepare data frame for submission
+kaggle_prediction <- data.frame(Id = house_test2$Id, SalePrice = prediction)
+head(kaggle_prediction)
+
+# commenting out so it doesn't reproduce
+#write.csv(kaggle_prediction, file = "submission_prediction.csv", row.names=FALSE)
+```
+
+$~$
+
+
+#### **Submission**
+
+Username: letisalba
+
+Score: 0.34307
+
+![](/Users/letiix3/Desktop/Data-605/Week-15/Kaggle_Submission_Prediction.png)
+
+$~$
+
+### **General References**
+* https://stackoverflow.com/questions/16496210/rotate-a-matrix-in-r-by-90-degrees-clockwise
+* https://www.rdocumentation.org/packages/igraph/versions/1.3.1/topics/graph_from_adjacency_matrix
+
+$~$
+
+### **Reference for Problem 2**
+
+* Used https://rpubs.com/jglendrange/data605final code to help me get a less noisy images for Step 7 - 8
+* I obtained code from https://rpubs.com/BigApple/893347 for the Predictions and Confusion Matrix
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

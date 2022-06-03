@@ -1,0 +1,225 @@
+---
+title: "Data 605 - Assignment 12"
+author: "Leticia Salazar"
+date: "4/11/2022"
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    theme: flatly
+    highlight: pygments
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+$~$
+
+### Regression Analysis
+
+$~$
+
+#### The attached who.csv dataset contains real-world data from 2008. The variables included following:
+
+|                          |                                                                                            |
+| ------------------------ | -------------------------------------------------------------------------------------------| 
+|Country                   |name of the country                                                                         |
+|LifeExp                   |average life expectancy for the country in years                                            |
+|InfantSurvival            |proportion of those surviving to one year or more                                           |
+|Under5Survival            |proportion of those surviving to five years or more                                         |
+|TBFree                    |proportion of the population without TB.                                                    |
+|PropMD                    |proportion of the population who are MDs                                                    |
+|PropRN                    |proportion of the population who are RNs                                                    |
+|PersExp                   |mean personal expenditures on healthcare in US dollars at average exchange rate             |
+|GovtExp                   |mean government expenditures per capita on healthcare, US dollars at average exchange rate  |
+|TotExp                    |sum of personal and government expenditures.                                                |
+
+$~$
+
+```{r, message = FALSE, warning = FALSE}
+# Import libraries
+library(tidyverse)
+library(expm)
+```
+
+
+```{r}
+# Load Data
+who <- read.csv('https://raw.githubusercontent.com/letisalba/Data-605/main/Week-12/who.csv', header = TRUE)
+head(who)
+```
+
+$~$
+
+```{r}
+# glimpse of data
+glimpse(who)
+
+# summary of data
+summary(who)
+```
+
+$~$
+
+#### 1. Provide a scatterplot of `LifeExp ~ TotExp`, and run simple linear regression. Do not transform the variables. Provide and interpret the `F statistics`, `R^2`, `standard error`, and `p-values` only. Discuss whether the assumptions of simple linear regression met.
+
+```{r}
+# Linear Model
+my_lm <- lm(LifeExp ~ TotExp, who)
+
+# Scatter plot
+plot(LifeExp ~ TotExp, who,
+     xlab = "Total Expenditures", ylab = "Life Expectancy",
+     main = "Life Expectancy v Total Expenditures")
+```
+
+$~$
+
+```{r}
+par(mfrow = c(2,2))
+plot(who)
+```
+
+$~$
+
+```{r}
+# Summary of linear model
+summary(my_lm)
+```
+
+$~$
+
+```{r}
+par(mfrow = c(2,2))
+plot(my_lm)
+```
+
+$~$
+
+#### **F-Statistic and P-Value:** This test if any of the independent variables are related to the Y outcome. If the p-value associated is $\geq$ 0.05 then there is no relationship and if $\leq$ 0.05 then there is at least 1 independent variable related to Y. From the summary we can see that the F-statistic is 65.26 and the p-value is 7.714e-14 which is less than 0.05, meaning there is at least one possible independent variable related to Y. Being that the p-value is relatively small, we can reject the null hypothesis and accept the alternative that the linear model is a better fit for the data.
+
+#### **$R^2$:** This measures how well the model describes our data. With a 0.2577 $R^2$ value, then 25.77% explains the variance in our data set. 
+
+#### **Standard Error:** When looking at the standard error you are looking for the variation in the residuals. For this data set the standard error is 9.371 on 188 degrees of freedom.
+
+#### Based on this we cannot asssume that linear regression is met because it doesn't seem to fully follow a linear trend and there a very low variance ($R^2$) with the data, so there may be other factors that come to play.
+
+$~$
+
+#### 2. Raise life expectancy to the `4.6 power` (i.e., $LifeExp^{4.6}$). Raise total expenditures to the `0.06 power` (nearly a log transform, $TotExp^{.06}$). Plot $LifeExp^{4.6}$ as a function of $TotExp^{.06}$, and r re-run the simple regression model using the transformed variables. Provide and interpret the `F statistics`, `R^2`, `standard error`, and `p-values`. Which model is "better"?
+
+```{r}
+LifeExp46 <- (who$LifeExp ** (4.6))
+TotExp06 <- (who$TotExp ** (.06))
+
+plot(TotExp06, LifeExp46,
+     xlab = "Total Expenditure",
+     ylab = "Life Expectancy",
+     main = "Total Expenditures v. Life Expectancy Transformation")
+```
+
+$~$
+
+```{r}
+my_lm2 <- lm(LifeExp46 ~ TotExp06, who)
+summary(my_lm2)
+```
+
+$~$
+
+```{r}
+par(mfrow = c(2,2))
+plot(my_lm2)
+```
+
+
+$~$
+
+#### **F-Statistic and P-Value:** Similarly to the first model, the F-statistic is 507.7 and the P-value is $<$ 2.2e-16, being that the P-value is small we know this model fits the data well. 
+
+#### **$R^2$:** With a 0.7298 $R^2$ value, then 72.98% explains the variance in our data set which is much higher than the first model.
+
+#### **Standard Error:** For this model the standard error is 90490000 on 188 degrees of freedom.
+
+#### Based on this we can asssume that linear regression is met because the plot looks more linear, the $R^2$ value is much higher than the first model and the P-value is still less than 0.05.
+
+$~$
+
+#### 3. Using the results from 3, `forecast life expectancy when TotExp^.06 = 1.5`. Then `forecast life expectancy when TotExp^.06 = 2.5`.
+
+```{r}
+# Key
+a <- -736527910
+b <- 620060216
+
+# Forecasting life expectancy when TotExp^.06 = 1.5
+LifeExp_46 <- a + b * 1.5
+LifeExp15 <- exp(log(LifeExp_46) / 4.6)
+LifeExp15
+
+# Forecasting life expectancy when TotExp^.06 = 2.5
+LifeExp2_46 <- a + b * 2.5
+LifeExp25 <- exp(log(LifeExp2_46) / 4.6)
+LifeExp25
+```
+
+
+$~$
+
+#### 4. Build the following multiple regression model and interpret the `F Statistics`, `$R^2$`, `standard error`, and `p-values`. How good is the model? 
+
+#### `LifeExp = b0 + b1 x PropMd + b2 x TotExp +b3 x PropMD x TotExp`
+
+
+```{r}
+my_lm3 <- lm(LifeExp ~ PropMD + TotExp + TotExp:PropMD, who)
+summary(my_lm3)
+```
+
+$~$
+
+```{r}
+par(mfrow = c(2,2))
+plot(my_lm3)
+```
+
+
+$~$
+
+```{r}
+plot(my_lm3$fitted.values, my_lm3$residuals, 
+     xlab="Fitted Values", ylab="Residuals",
+     main="Residuals Plot")
+abline(0,0, col = 'red')
+```
+
+$~$
+
+#### **F-Statistic and P-Value:** the F-statistic and p-value are still relatively low so we know the model fits the data well.
+
+#### **$R^2$:** Comparing it with the second model, the $R^2$ decreased to 35.74% of variance in the data.
+
+#### **Standard Error:** For this model the standard error is 8.765 on 186 degrees of freedom.
+
+#### Based on the model and plot above, this doesn't look like it's normally distributed and the $R^2$ value only accounts for a low amount of variance compared to the second model. Therefore, this model is not a good fit.
+
+$~$
+
+#### 5. `Forecast LifeExp when PropMD = .03 and TotExp = 14`. Does this forecast seem realistic? Why or why not?
+
+```{r}
+# Key
+inter <-  62.8
+co2 <- 0.00007233
+co3 <- 1497
+PropMD <- .03
+TotExp <- 14
+
+pred_5 <- inter + co2 * TotExp + co3 * PropMD + .006 * 14 * PropMD
+pred_5
+```
+
+$~$
+
+#### This forecast doesn't seem realistic because it is such a long time for a person's life expectancy.

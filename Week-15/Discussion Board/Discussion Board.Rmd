@@ -1,0 +1,110 @@
+---
+title: "Data 605 - Discussion Board Week 15"
+author: "Leticia Salazar"
+date: "4/30/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+$~$
+
+
+#### Pick any exercise in Chapter 12 of the calculus textbook.  Post the solution or your attempt.  Discuss any issues you might have had.
+
+$~$
+
+#### Exercise 12.3.5, 12.3.6, 12.3.7 and 12.3.8 pg. 711
+
+$~$
+
+$f(x,y) = x^2y − x + 2y + 3$ at (1,2)
+
+```{r}
+# Exercise 5
+f5 <- expression((x**2*y) - x + 2*y + 3)
+x <- 1
+y <- 2
+
+fx5 <- D(f5, "x")
+fx5
+
+fy5 <- D(f5, "y")
+fy5
+
+eval(fx5)
+eval(fy5)
+```
+
+$~$
+
+$f(x,y) = x^3 − 3x + y^2 −6y$ at (−1,3)
+
+```{r}
+# Exercise 6
+f6 <- expression(x**3 - 3*x + y**2 - 6*y) 
+x <- -1
+y <- 3
+
+fx6 <- D(f6, "x")
+fx6
+
+fy6 <- D(f6, "y")
+fy6
+
+eval(fx6)
+eval(fy6)
+```
+
+$~$
+
+$f(x,y) = sinycosx$ at (π/3,π/3)
+```{r}
+# Exercise 7
+f7 <- expression((sin * y) * (cos * x)) 
+x <- (pi / 3)
+y <- (pi / 3)
+
+fx7 <- D(f7, "x")
+fx7
+
+fy7 <- D(f7, "y")
+fy7
+
+# Had to comment out eval() because I was getting Error in sin * y : non-numeric argument to binary operator
+#eval(fx7)
+#eval(fy7)
+```
+
+$~$
+
+$f(x,y) = ln(xy)$ at (−2,−3)
+```{r}
+# Exercise 8
+f8 <- expression(log(x*y)) 
+x <- -2
+y <- -3
+
+fx8 <- D(f8, "x")
+fx8
+
+fy8 <- D(f8, "y")
+fy8
+
+eval(fx8)
+eval(fy8)
+```
+
+
+$~$
+
+### What were the most valuable elements you took away from this course?
+
+1. There is always more than one way to approach a problem and verifying with R helps when you are doing a problem by hand.
+
+2. Refresher course for linear algebra
+
+3. Helpful to learn and use for real world problems.
+

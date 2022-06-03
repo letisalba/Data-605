@@ -1,0 +1,72 @@
+---
+title: "Data 605 - Discussion Board Week 14"
+author: "Leticia Salazar"
+date: "5/4/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+$~$
+
+## Calculus Exercise 8.8.17
+
+#### Pick any exercise in 8.8 of the calculus textbook.  Solve and post your solution.  If you have issues doing so, discuss them. 
+
+$~$
+
+#### In exercise 17 - 20, use the Taylor series given the Key idea 8.8.1 to verify the given identity.
+
+```{r, warning = FALSE}
+# this library is where the taylor series function is located
+library(pracma)
+```
+
+$~$
+
+#### cos(−x) = cos x
+
+```{r}
+# getting results for cos(-x)
+x <- function(x) cos(-x)
+result <- taylor(x, 0, 5)
+result
+sum(result)
+```
+
+```{r}
+# getting results for cos(x)
+x2 <- function(x) cos(x)
+result <- taylor(x2, 0, 5)
+result
+sum(result)
+```
+
+$~$
+
+#### sin(-x) = - sin x
+
+```{r}
+# getting results for sin(-x)
+x3 <- function(x) sin(-x)
+result <- taylor(x3, 0, 5)
+result
+sum(result)
+```
+
+```{r}
+# getting results for -sin(x)
+x4 <- function(x) (-sin(x))
+result <- taylor(x4, 0, 5)
+result
+sum(result)
+```
+
+
+
+### Conclusion:
+#### Based on the above results cos(-x) = cos(x) and sin(-x) = -sin(x)
+ 
+#### Issues: At first I didn't know how exactly to approach the problem using the pracma library. I found this resource that helped me a bit more: https://www.rdocumentation.org/packages/pracma/versions/1.9.9/topics/taylor, but my question still arised when showing that the left side of the function was equal to the right side. Based on my work above, did I approach the problem correctly? Any suggestions?

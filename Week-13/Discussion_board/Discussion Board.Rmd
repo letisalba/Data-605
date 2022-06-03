@@ -1,0 +1,101 @@
+---
+title: "Data 605 - Discussion Board Week 13"
+author: "Leticia Salazar"
+date: "4/25/2022"
+output:
+  html_document:
+    theme: flatly
+    highlight: pygments
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+$~$
+
+### Calculus Exercise 7.1.13 and 7.1.14
+
+#### Using R, provide the solution for any exercise in either Chapter 4 or Chapter 7 of the calculus textbook.  If you are unsure of your solution, post your concerns.
+
+$~$
+
+#### Find the total area enclosed by the functions *f* and *g*
+
+#### $f(x) = 2x^2 + 5x −3,  g(x) = x^2 + 4x − 1$
+
+```{r}
+# create functions
+f13 <- function(x) {2 * (x^2) + (5 * x) - 3}
+g13 <- function(x) {(x^2) + (4 * x) - 1}
+ 
+integrate(f13, lower = -3, upper = 2)
+
+integrate(g13, lower = -1, upper = 1)
+
+```
+
+#### Based on this, the total area enclosed by the function f is -4.167 with absolute error < 2.7e-13 and for function g is -1.33 with absolute error < 4.7e-14.
+
+```{r}
+# plot
+curve(f13, from = -3, to = 3, col = 2)
+curve(g13, from = -3, to = 3, add = TRUE, col = 4)
+```
+
+$~$
+
+```{r}
+# Based on the graph, the two intersecting points are -2 and 1, we are setting the lower and upper to those points.
+f13_area <- integrate(f13, lower = -2, upper = 1)
+f13_area
+g13_area <- integrate(g13, lower = -2, upper = 1)
+g13_area
+
+# area between the curve is g - f
+print(paste0('The area between the curve is ',(g13_area$value - f13_area$value)))
+```
+
+
+$~$
+
+#### $f(x) = x^2 − 3x + 2,   g(x) = −3x + 3$
+
+```{r}
+# create functions
+f14 <- function(x) {(x ^2) - (3 * x) + 2}
+g14 <- function(x) {(-3 * x) + 3}
+ 
+integrate(f14, lower = 2, upper = 1)
+integrate(g14, lower = 3, upper = -3)
+```
+
+#### Based on this, the total area enclosed by the function f is 0.167 with absolute error < 1.9e-15 and for function g is -18 with absolute error < 3.3e-13.
+
+```{r}
+# plot
+curve(f14, from = -3, to = 3, col = 2)
+curve(g14, from = -3, to = 3, add = TRUE, col = 4)
+```
+
+$~$
+
+```{r}
+# Based on the graph, the two intersecting points are -1 and 1, we are setting the lower and upper to those points.
+f14_area <- integrate(f14, lower = -1, upper = 1)
+f14_area
+g14_area <- integrate(g14, lower = -1, upper = 1)
+g14_area
+
+# area between the curve is g - f
+print(paste0('The area between the curve is ',(g14_area$value - f14_area$value)))
+```
+
+
+$~$
+
+### References:
+* Used Tyler Baker's approach from his discussion board post
+* https://r-charts.com/evolution/curve/

@@ -1,0 +1,38 @@
+---
+title: "Discussion Board Follow-Up"
+author: "Leticia Salazar"
+date: "4/27/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+$~$
+
+### Exercise 5 from 5.4
+
+
+$~$
+
+#### $f(x) = 3x^2 - 2x + 1$ 
+
+```{r}
+f <- function(x){(3*x^2) - (2 * x) + 1}
+integrate(f, lower = 1, upper = 3)
+```
+
+$~$
+
+#### Following Tyler's code I created the plot to show what this function would look like.
+
+
+```{r}
+# plot
+curve(f, from = -3, to = 3, col = 2)
+```
+
+$~$
+
+#### Correct me if I am wrong but the absolute error is the estimate of the absolute value of the absolute error therefore measuring the accuracy of the model.
