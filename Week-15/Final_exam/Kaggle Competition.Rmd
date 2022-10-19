@@ -1,0 +1,309 @@
+---
+title: "Data 605 - Kaggle Competition"
+author: "Leticia Salazar"
+date: "5-10-2022"
+output:
+  html_document:
+    theme: simplex
+    highlight: kate
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+$~$
+
+#### **Loading libraries**
+```{r, warning = FALSE, message = FALSE}
+# For Problem 3
+library(MASS)
+library(matrixcalc)
+library(GGally)
+
+# For all Problems
+library(ggplot2)
+library(tidyverse)
+library(hrbrthemes)
+```
+
+### **Problem 3 Kaggle Competition**
+
+
+##### You are to compete in the House Prices: Advanced Regression Techniques competition https://www.kaggle.com/c/house-prices-advanced-regression-techniques. I want you to do the following:
+
+$~$
+
+### **Descriptive and Inferential Statistics** 
+
+##### Provide univariate descriptive statistics and appropriate plots for the training data set. Provide a scatterplot matrix for at least two of the independent variables and the dependent variable. Derive a correlation matrix for any three quantitative variables in the dataset. Test the hypotheses that the correlations between each pairwise set of variables is 0 and provide an 80% confidence interval. Discuss the meaning of your analysis. Would you be worried about familywise error? Why or why not? 5 points
+
+```{r}
+# Read csv file renaming train.csv to house_train
+house_train <- read.csv('/Users/letiix3/Documents/Data Sciene MS Program/Data-605/Week-15/Submission_Prediction/train.csv', header = T, sep = ",")
+head(house_train[1:15], n = 5)
+```
+
+
+```{r}
+# glimpse of data set columns 1 - 10
+glimpse(house_train[1:10])
+```
+
+
+```{r}
+# summary of data set with filter of numeric values only
+house_train %>%
+  select_if(is.numeric) %>%
+  summary()
+```
+
+$~$
+
+```{r}
+# plot to see overview of SalePrice
+house_train%>%
+  ggplot( aes(x = SalePrice)) +
+    geom_histogram( binwidth = 30,  fill = "pink", color = "#e9ecef", alpha = 0.9) +
+    ggtitle("Histogram of 'SalePrice'") +
+    theme_ipsum() +
+    theme(
+      plot.title = element_text(size = 15)
+    )
+```
+
+
+```{r}
+# selecting random columns to create a Correlogram
+house_train%>%
+ggpairs(columns = 44:53, ggplot2::aes(colour = 'species')) 
+```
+
+
+$~$
+
+##### Provide a scatterplot matrix for at least two of the independent variables and the dependent variable.
+```{r}
+colnames(house_train)
+```
+
+
+```{r}
+# plot for SalePrice and LotArea
+house_train %>%
+ggplot(aes(x = SalePrice, y = LotArea, color = YearBuilt)) + 
+    geom_point(size = 3) +
+    geom_smooth(method = "lm", color = 'red') +
+    theme_ipsum()
+```
+
+
+```{r}
+# plot for YearBuilt and SalePrice
+house_train %>%
+ggplot(aes(x = YearBuilt, y = SalePrice, color = YrSold)) + 
+    geom_point(size = 3) +
+    geom_smooth(method = "lm", color = 'red') +
+    theme_ipsum()
+```
+
+$~$
+
+##### Derive a correlation matrix for any three quantitative variables in the dataset. 
+```{r}
+cor_house <- house_train %>%
+  dplyr::select(LotArea, YearBuilt, X1stFlrSF)
+cor_m <- cor(cor_house)
+cor_m
+```
+
+$~$
+
+##### Test the hypotheses that the correlations between each pairwise set of variables is 0 and provide an 80% confidence interval. Discuss the meaning of your analysis. Would you be worried about familywise error? Why or why not?
+
+Based on the tests below, we can reject the null hypothesis that states that the correlation is zero and accept the alternative hypothesis. We should be worried about familywise error.
+```{r}
+cor.test(house_train$LotArea, house_train$YearBuilt, conf.level = 0.8)
+```
+
+
+```{r}
+cor.test(house_train$LotArea, house_train$X1stFlrSF, conf.level = 0.8)
+```
+
+
+```{r}
+cor.test(house_train$X1stFlrSF, house_train$YearBuilt, conf.level = 0.8)
+```
+
+$~$
+
+### **Linear Algebra and Correlation**
+
+##### Invert your correlation matrix from above. (This is known as the precision matrix and contains variance inflation factors on the diagonal.) Multiply the correlation matrix by the precision matrix, and then multiply the precision matrix by the correlation matrix. Conduct LU decomposition on the matrix. 5 points
+```{r}
+# invert correlation matrix from above
+invert_cor <- solve(cor_m)
+invert_cor
+# precision
+precision_cor <- round(cor_m %*% invert_cor)
+precision_cor
+# LU decomposition
+lu_decom_cor <- lu.decomposition(cor_m)
+lu_decom_cor
+```
+
+$~$
+
+### **Calculus-Based Probability & Statistics** 
+
+##### Many times, it makes sense to fit a closed form distribution to data. Select a variable in the Kaggle.com training dataset that is skewed to the right, shift it so that the minimum value is absolutely above zero if necessary. Then load the MASS package and run fitdistr to fit an exponential probability density function. (See https://stat.ethz.ch/R-manual/Rdevel/library/MASS/html/fitdistr.html ). Find the optimal value of λ for this distribution, and then take 1000 samples from this exponential distribution using this value (e.g., rexp(1000, λ)). Plot a histogram and compare it with a histogram of your original variable. Using the exponential pdf, find the 5th and 95th percentiles using the cumulative distribution function (CDF). Also generate a 95% confidence interval from the empirical data, assuming normality. Finally, provide the empirical 5th percentile and 95th percentile of the data. Discuss. 10 points
+
+```{r}
+# Select a variable in the Kaggle.com training dataset that is skewed to the right, shift it so that the minimum value is absolutely above zero if necessary.
+house_train%>%
+  filter(OpenPorchSF < 350) %>%
+  ggplot( aes(x = OpenPorchSF)) +
+    geom_histogram( binwidth = 15,  fill = "purple", color = "#e9ecef", alpha = 0.9) +
+    ggtitle("Histogram of 'OpenPorchSF'") +
+    theme_ipsum() +
+    theme(
+      plot.title = element_text(size=15)
+    )
+```
+
+
+```{r}
+# exponential distribution
+expon_OpenPorchSF <- fitdistr(house_train$OpenPorchSF, 'exponential')
+# lambda
+lamb_OpenPorchSF <- expon_OpenPorchSF$estimate
+lamb_OpenPorchSF
+# sample of 1000
+exp_samp <- rexp(1000, lamb_OpenPorchSF)
+summary(exp_samp)
+```
+
+
+```{r}
+# Plot histogram and compare it with original histogram
+hist(exp_samp, main = "Histogram of Exponential Sample of 'OpenPorchSF'")
+```
+
+$~$
+
+##### Using the exponential pdf, find the 5th and 95th percentiles using the cumulative distribution function (CDF). Also generate a 95% confidence interval from the empirical data, assuming normality. Finally, provide the empirical 5th percentile and 95th percentile of the data. Discuss.
+
+```{r}
+# 5th and 95th percentiles
+lower <- qexp(0.05, lamb_OpenPorchSF)
+lower
+upper <- qexp(0.95, lamb_OpenPorchSF)
+upper
+# empirical 5th and 95th percentile
+quantile(house_train$OpenPorchSF, c(0.05, 0.95))
+print(paste('The 5th percentile is 0.00 and the 95th percentile is 175.05.'))
+```
+
+$~$
+
+### **Modeling**
+
+##### Build some type of multiple regression model and submit your model to the competition board. Provide your complete model summary and results with analysis. Report your Kaggle.com username and score. 10 points
+
+
+```{r}
+# selection columns that are numeric only
+house_train2 <- house_train %>% 
+  dplyr::select_if(is.numeric)
+# Check for missing values in data 
+colSums(is.na(house_train2))
+```
+
+```{r}
+model_house <- lm(SalePrice ~., house_train2)
+summary(model_house)
+```
+
+```{r}
+plot(model_house)
+```
+
+
+```{r}
+model_house2 <- lm(SalePrice ~ MSSubClass + LotFrontage + LotArea +  OverallQual + OverallCond + YearBuilt + YearRemodAdd + MasVnrArea + BsmtFinSF1 + BsmtFinSF2 + BsmtUnfSF + TotalBsmtSF + X1stFlrSF + X2ndFlrSF + LowQualFinSF + GrLivArea + BsmtFullBath + BsmtHalfBath + FullBath + HalfBath + BedroomAbvGr + KitchenAbvGr + TotRmsAbvGrd + Fireplaces + GarageYrBlt + GarageCars + GarageArea + WoodDeckSF + OpenPorchSF + EnclosedPorch + X3SsnPorch + ScreenPorch + PoolArea + MiscVal + MoSold + YrSold, house_train2)
+summary(model_house2)
+```
+
+```{r}
+plot(model_house2)
+```
+
+
+```{r}
+# Using only significant columns
+model_house3 <- lm(SalePrice ~ MSSubClass + LotFrontage + LotArea +  OverallQual + OverallCond + YearBuilt + MasVnrArea + BsmtFinSF1 + X1stFlrSF + X2ndFlrSF + BsmtFullBath + BedroomAbvGr + KitchenAbvGr + TotRmsAbvGrd + Fireplaces + GarageCars + WoodDeckSF + ScreenPorch + PoolArea, house_train2)
+summary(model_house3)
+```
+
+```{r}
+plot(model_house3)
+```
+
+
+```{r}
+# Removing 2 more columns 
+model_house4 <- lm(SalePrice ~ MSSubClass + LotArea +  OverallQual + OverallCond + YearBuilt + MasVnrArea + BsmtFinSF1 + X1stFlrSF + X2ndFlrSF + BsmtFullBath + BedroomAbvGr + KitchenAbvGr + TotRmsAbvGrd + GarageCars + WoodDeckSF + ScreenPorch + PoolArea, house_train2)
+summary(model_house4)
+```
+
+
+```{r}
+# Using model_house4 we'll create a scatterplot
+plot(model_house4)
+```
+
+$~$
+
+```{r}
+# Predict prices for test data
+house_test <- read.csv('/Users/letiix3/Documents/Data Sciene MS Program/Data-605/Week-15/Submission_Prediction/test.csv')
+house_test2 <- house_test %>%
+  dplyr::select_if(is.numeric) %>%
+  replace(is.na(.),0)
+prediction <- predict(model_house4, house_test2, type = "response")
+head(prediction)
+# Prepare data frame for submission
+kaggle_prediction <- data.frame(Id = house_test2$Id, SalePrice = prediction)
+head(kaggle_prediction)
+# commenting out so it doesn't reproduce
+#write.csv(kaggle_prediction, file = "submission_prediction.csv", row.names=FALSE)
+```
+
+$~$
+
+
+#### **Submission**
+
+Username: letisalba
+
+Score: 0.34307
+
+![](/Users/letiix3/Documents/Data Sciene MS Program/Data-605/Week-15/Submission_Prediction/Kaggle_Submission_Prediction.png)
+
+$~$
+
+### **General References**
+* https://stackoverflow.com/questions/16496210/rotate-a-matrix-in-r-by-90-degrees-clockwise
+* https://www.rdocumentation.org/packages/igraph/versions/1.3.1/topics/graph_from_adjacency_matrix
+
+$~$
+
+### **Reference for Problem 2**
+
+* Used https://rpubs.com/jglendrange/data605final code to help me get a less noisy images for Step 7 - 8
+* I obtained code from https://rpubs.com/BigApple/893347 for the Predictions and Confusion Matrix
